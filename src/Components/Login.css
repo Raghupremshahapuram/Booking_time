@@ -1,0 +1,70 @@
+.login-background {
+    background-image: url('https://images.unsplash.com/photo-1583337130417-3346a1af14b5');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Logout button and app header */
+  .app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .logout-btn {
+    padding: 6px 14px;
+    font-size: 14px;
+  }
+  
+  .profile-menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .profile-name {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .home-link {
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+  }
+  .login-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 30px 25px;
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  }
+  
+  .login-container h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #343a40;
+  }
+  
+  .login-container label {
+    font-weight: 500;
+    margin-top: 15px;
+  }
+  
+  .login-container input {
+    margin-top: 5px;
+  }
+  
+  .login-container .btn {
+    width: 100%;
+  }

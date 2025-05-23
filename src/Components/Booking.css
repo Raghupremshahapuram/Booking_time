@@ -1,0 +1,118 @@
+.booking-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f4f4f4;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.seat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.seat {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.seat input {
+  display: none; /* hide checkbox */
+}
+
+.seat::before {
+  content: "";
+  width: 40px;
+  height: 40px;
+  background-color: #ccc;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.seat:hover::before {
+  background-color: #aaa;
+  transform: scale(1.1);
+}
+
+.seat input:checked + .seat-label {
+  background-color: #28a745; /* green for selected */
+  color: white;
+}
+
+.seat-label {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  background-color: #ccc;
+  transition: background-color 0.3s ease;
+}
+.qr-section {
+  margin-top: 30px;
+  text-align: center;
+}
+.ticket-summary {
+  display: flex;
+  justify-content: start;
+  gap: 30px;
+  margin-top: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.qr-section {
+  flex-shrink: 0;
+}
+
+.ticket-details {
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.movie-title {
+  color: #007bff;
+  font-weight: bold;
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+  body * {
+    color: #000 !important;
+    background: #fff !important;
+  }
+  .ticket-page .no-print {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 30px; /* more space above */
+    margin-bottom: 30px; /* more space below */
+    flex-wrap: wrap;
+  }
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 30px;
+    margin-bottom: 50px; /* extra spacing at bottom */
+  }
+  
+}
