@@ -19,7 +19,7 @@ const LoginPage = () => {
   
     if (username && password) {
       try {
-        const res = await axios.get(`http://localhost:6700/users`, {
+        const res = await axios.get(`https://movie-api-b9qw.onrender.com/users`, {
           params: { username, password }
         });
   

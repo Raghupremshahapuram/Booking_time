@@ -38,7 +38,8 @@ const AppHeader = () => {
     <div className="d-flex align-items-center">
       {isLoggedIn ? (
         <>
-          <span className="username me-3">👤 {username}</span>
+       
+         <span> <Link to="/profile" className="me-3 text-decoration-none text-light">👤 {username}</Link></span>
           <button onClick={handleLogout} className="btn btn-outline-light btn-sm">Logout</button>
         </>
       ) : (

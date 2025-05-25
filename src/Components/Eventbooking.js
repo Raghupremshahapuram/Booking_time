@@ -19,7 +19,7 @@ const EventBookingPage = () => {
 
   useEffect(() => {
     if (!eventName) {
-      axios.get('http://localhost:6700/events')
+      axios.get('https://movie-api-b9qw.onrender.com/events')
         .then(res => {
           const event = res.data.find(e => e.id === id);
           if (event) setEventName(event.title);
@@ -45,14 +45,24 @@ const EventBookingPage = () => {
       return;
     }
 
+    const username = localStorage.getItem('username');
+
     const bookingDetails = {
+      user: username,
       eventId: id,
       eventName,
       date: selectedDate,
       seats: selectedSeats
     };
-
-    navigate('/ticket', { state: bookingDetails });
+  
+    axios.post('https://movie-api-b9qw.onrender.com/bookings', bookingDetails)
+      .then(() => {
+        navigate('/ticket', { state: bookingDetails });
+      })
+      .catch(err => {
+        console.error("Error saving booking:", err);
+        alert("Failed to book event. Please try again.");
+      });
   };
 
   if (loading) return <h3>Loading event info...</h3>;

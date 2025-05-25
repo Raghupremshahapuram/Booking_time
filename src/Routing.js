@@ -14,6 +14,7 @@ import EventDetails from './Components/Eventdetails';
 import EventBookingPage from './Components/Eventbooking.js';
 import'./App.css';
 import AppHeader from './Components/Appheader';
+import Profile from './Components/Profile.js';
 
 
 const Routing = () => {
@@ -37,7 +38,7 @@ const Routing = () => {
                   <Route path="/upcoming/:id" element={<UpcomingDetails />} />
                   <Route path="/event/:id" element={<EventDetails />} />
                   <Route path="/event-book/:id" element={<EventBookingPage />} />
-
+                  <Route path="/profile" element={<Profile />} />
 
 
                 </Routes>

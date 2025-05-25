@@ -11,7 +11,7 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:6700/latest")
+    axios.get("https://movie-api-b9qw.onrender.com/latest")
       .then(res => {
         const found = res.data.find((movie) => movie.id === id);
         setMovie(found);
@@ -37,7 +37,7 @@ const MovieDetails = () => {
     <div className="container mt-4">
       
       <div className="card">
-        <img src={movie.imageUrl} className="card-img-top" alt={movie.name} />
+        <img src={movie.imageUrl} className="movie-poster" alt={movie.name} />
         <div className="card-body">
           <h2 className="card-title">{movie.name}</h2>
           <p><strong>Language:</strong> {movie.language}</p>

@@ -33,7 +33,7 @@ const BookingPage = () => {
     }
 
     if (!movieName) {
-      axios.get(`http://localhost:6700/latest?id=${id}`)
+      axios.get(`https://movie-api-b9qw.onrender.com/latest?id=${id}`)
         .then(res => {
           const fetchedName = res.data[0]?.name;
           if (fetchedName) {
@@ -67,16 +67,27 @@ const BookingPage = () => {
       return;
     }
 
-    const bookingDetails = {
-      movieId: id,
-      movieName,
-      date: selectedDate,
-      time: selectedTime,
-      seats: selectedSeats,
-    };
+   
+  const username = localStorage.getItem('username');
 
-    navigate('/ticket', { state: bookingDetails });
+  const bookingDetails = {
+    user: username,
+    movieId: id,
+    movieName,
+    date: selectedDate,
+    time: selectedTime,
+    seats: selectedSeats
   };
+
+  axios.post('https://movie-api-b9qw.onrender.com/bookings', bookingDetails)
+    .then(() => {
+      navigate('/ticket', { state: bookingDetails });
+    })
+    .catch(err => {
+      console.error("Error saving booking:", err);
+      alert("Failed to book ticket. Please try again.");
+    });
+};
 
   if (loading) return <h3>Loading movie info...</h3>;
   if (error) return <h3 style={{ color: 'red' }}>{error}</h3>;

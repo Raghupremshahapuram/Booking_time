@@ -34,7 +34,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const res = await axios.get('http://localhost:6700/users');
+      const res = await axios.get('https://movie-api-b9qw.onrender.com/users');
       const existingUser = res.data.find(
         (user) => user.username === username || user.email === email
       );
@@ -44,7 +44,7 @@ const RegisterPage = () => {
         return;
       }
 
-      await axios.post('http://localhost:6700/users', {
+      await axios.post('https://movie-api-b9qw.onrender.com/users', {
         username,
         email,
         password

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './Moviedetails.css';
+import './Event.css';
 
 const EventDetails = () => {
   const { id } = useParams();
@@ -10,7 +10,7 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:6700/events`)
+    axios.get(`https://movie-api-b9qw.onrender.com/events`)
       .then(res => {
         const found = res.data.find(e => e.id === id);
         setEvent(found);
@@ -54,6 +54,8 @@ const EventDetails = () => {
 </div>
 
     </div>
+
+
   );
 };
 
