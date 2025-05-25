@@ -17,7 +17,7 @@ const Home = () => {
     const fetchMovies = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("http://localhost:6700/latest");
+        const response = await axios.get("https://movie-api-b9qw.onrender.com/api/latest");
         dispatch(fetchMovieSucess(response.data)); 
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));
