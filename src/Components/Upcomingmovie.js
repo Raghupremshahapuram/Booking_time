@@ -17,7 +17,7 @@ const Upcoming = () => {
     const fetchMovies = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("http://localhost:6700/upcomingMovies");
+        const response = await axios.get("https://movie-api-b9qw.onrender.com/upcomingMovies");
         dispatch(fetchUpcomingSuccess(response.data)); 
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));
@@ -37,7 +37,7 @@ const Upcoming = () => {
         {Array.isArray(upcomingMovies) && upcomingMovies.map((movie) => (
           <div key={movie.id} className="col-md-4">
             <div className="card mb-3">
-              <img src={movie.imageUrl} className="card-img-top" alt={movie.name} />
+              <img src={movie.imageUrl} className="movie-poster" alt={movie.name} />
               <div className="card-body">
                 <h5 className="card-title">{movie.name}</h5>
                 <Link to={`/upcoming/${movie.id}`} className="btn btn-primary">View Details</Link>

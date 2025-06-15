@@ -1,0 +1,47 @@
+/* Profile.css */
+
+/* Dark Mode Support */
+.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  .dark-mode .card {
+    background-color: #1e1e1e;
+    border-color: #333;
+  }
+  
+  .dark-mode .btn {
+    border-color: #ccc;
+  }
+  
+  /* Thank You Animation */
+  .thank-you-message {
+    font-size: 1rem;
+    color: #28a745;
+    animation: fadeInUp 1s ease-in-out;
+  }
+  
+  /* Fade In Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Responsive Cards */
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 1rem;
+    }
+  
+    .thank-you-message {
+      font-size: 0.9rem;
+    }
+  }
+  

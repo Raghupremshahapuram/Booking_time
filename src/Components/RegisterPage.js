@@ -7,10 +7,10 @@ import './Booking.css';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: ""
   });
 
   const navigate = useNavigate();
@@ -21,9 +21,9 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { username, email, password, confirmPassword } = formData;
+    const { name, email, password, confirmPassword } = formData;
 
-    if (!username || !email || !password || !confirmPassword) {
+    if (!name || !email || !password || !confirmPassword) {
       toast.warn('Please fill in all fields');
       return;
     }
@@ -34,9 +34,9 @@ const RegisterPage = () => {
     }
 
     try {
-      const res = await axios.get('http://localhost:6700/users');
+      const res = await axios.get('https://postgres-movie.onrender.com/users');
       const existingUser = res.data.find(
-        (user) => user.username === username || user.email === email
+        (user) => user.name === name || user.email === email
       );
 
       if (existingUser) {
@@ -44,8 +44,8 @@ const RegisterPage = () => {
         return;
       }
 
-      await axios.post('http://localhost:6700/users', {
-        username,
+      await axios.post('https://postgres-movie.onrender.com/users', {
+        name,
         email,
         password
       });
@@ -66,8 +66,8 @@ const RegisterPage = () => {
           <label>Username:</label>
           <input
             className="form-control"
-            name="username"
-            value={formData.username}
+            name="name"
+            value={formData.name}
             onChange={handleChange}
           />
 

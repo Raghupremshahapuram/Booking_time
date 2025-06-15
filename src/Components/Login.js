@@ -7,30 +7,34 @@ import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [name, setName] = useState('');
+
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
   const fromPath = location.state?.from || '/';
 
+  
   const handleLogin = async (e) => {
     e.preventDefault();
   
-    if (username && password) {
+    if (name && password) {
       try {
-        const res = await axios.get(`http://localhost:6700/users`, {
-          params: { username, password }
-        });
+        const res = await axios.get(`https://postgres-movie.onrender.com/users`);
+        const users = res.data;
   
-        if (res.data.length > 0) {
-          // Valid user
+        // Exact match filter
+        const matchedUser = users.find(
+          (u) => u.name === name && u.password === password
+        );
+  
+        if (matchedUser) {
           localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('username', username);
+          localStorage.setItem('loggedInUser', JSON.stringify(matchedUser));
           toast.success('Login successful');
           navigate(fromPath);
         } else {
-          // Invalid credentials
           toast.error('Invalid username or password');
         }
       } catch (err) {
@@ -56,8 +60,10 @@ const LoginPage = () => {
       <div className="login-container">
         <h2>Login to Continue</h2>
         <form onSubmit={handleLogin} className="form-group">
-          <label>Username:</label>
-          <input className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} />
+         
+          <label>UserName:</label>
+            < input className="form-control" value={name} onChange={(e) => setName(e.target.value)} />
+
 
           <label>Password:</label>
           <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />

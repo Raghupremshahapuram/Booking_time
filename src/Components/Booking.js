@@ -3,37 +3,70 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Booking.css';
 
-const showTimes = ["10:00 AM", "1:00 PM", "4:00 PM", "7:00 PM", "10:00 PM"];
-const seats = Array.from({ length: 30 }, (_, i) => `Seat ${i + 1}`);
+// Show timings with 24-hour values for filtering
+const showTimes = [
+  { label: "10:00 AM", hour: 10 },
+  { label: "1:00 PM", hour: 13 },
+  { label: "4:00 PM", hour: 16 },
+  { label: "7:00 PM", hour: 19 },
+  { label: "10:00 PM", hour: 22 }
+];
 
+// Get today's date in YYYY-MM-DD format
 const getTodayDate = () => {
   const today = new Date();
   return today.toISOString().split('T')[0];
 };
+
+// Check if the selected date is today
+const isToday = (selectedDate) => {
+  const today = new Date();
+  const selected = new Date(selectedDate);
+  return today.toDateString() === selected.toDateString();
+};
+
+// Get current hour in 24-hour format
+const getCurrentHour = () => new Date().getHours();
+
+const seats = Array.from({ length: 30 }, (_, i) => `Seat ${i + 1}`);
 
 const BookingPage = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const storedName = sessionStorage.getItem('movieName');
-  const [movieName, setMovieName] = useState(location.state?.movieName || storedName || '');
+  const [movieName, setMovieName] = useState(location.state?.movieName || sessionStorage.getItem('movieName') || '');
   const [loading, setLoading] = useState(!movieName);
   const [error, setError] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedDate, setSelectedDate] = useState(getTodayDate());
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [checkingLogin, setCheckingLogin] = useState(true);
+
+  const getLoggedInUser = () => {
+    try {
+      const userStr = localStorage.getItem('loggedInUser');
+      if (!userStr) return null;
+      const user = JSON.parse(userStr);
+      return user?.name ? user : null;
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem('loggedIn');
-    if (!isLoggedIn) {
-      sessionStorage.setItem('movieName', movieName); // Save movie name before redirect
-      navigate('/login', { state: { from: `/book/${id}` } });
-      return;
-    }
-
     if (!movieName) {
-      axios.get(`http://localhost:6700/latest?id=${id}`)
+      const storedName = sessionStorage.getItem('movieName');
+      if (storedName) {
+        setMovieName(storedName);
+      }
+    }
+  }, [movieName]);
+
+  useEffect(() => {
+    if (!movieName) {
+      setLoading(true);
+      axios.get(`https://movie-api-b9qw.onrender.com/latest?id=${id}`)
         .then(res => {
           const fetchedName = res.data[0]?.name;
           if (fetchedName) {
@@ -51,7 +84,8 @@ const BookingPage = () => {
     } else {
       setLoading(false);
     }
-  }, [id, navigate, movieName]);
+    setCheckingLogin(false);
+  }, [id, movieName]);
 
   const handleSeatChange = (seat) => {
     setSelectedSeats(prev =>
@@ -63,21 +97,50 @@ const BookingPage = () => {
 
   const handleBooking = () => {
     if (!selectedTime || !selectedDate || selectedSeats.length === 0) {
-      alert('Please select all fields');
+      alert('Please select date, time and seats before booking.');
+      return;
+    }
+
+    const user = getLoggedInUser();
+    if (!user) {
+      alert('No logged-in user found. Please log in again.');
       return;
     }
 
     const bookingDetails = {
-      movieId: id,
-      movieName,
+      userId: user.id,
+      name: user.name,
+      
+      movie_name: movieName, 
+      event_name: null,
       date: selectedDate,
       time: selectedTime,
-      seats: selectedSeats,
+      // seats: selectedSeats,
+      seats: selectedSeats.join(', ')
     };
+   
 
-    navigate('/ticket', { state: bookingDetails });
+    axios.post('https://postgres-movie.onrender.com/bookings', bookingDetails)
+    
+      .then(() => {
+        navigate('/ticket', { state: bookingDetails });
+      })
+      .catch(err => {
+        console.error("Error saving booking:", err);
+        alert("Failed to book ticket. Please try again.");
+      });
+      
   };
 
+  // Filter show times based on current time if today is selected
+  const filteredTimes = showTimes.filter(show => {
+    if (isToday(selectedDate)) {
+      return show.hour > getCurrentHour();
+    }
+    return true;
+  });
+
+  if (checkingLogin) return <h3>Checking login status...</h3>;
   if (loading) return <h3>Loading movie info...</h3>;
   if (error) return <h3 style={{ color: 'red' }}>{error}</h3>;
 
@@ -92,7 +155,10 @@ const BookingPage = () => {
           type="date"
           value={selectedDate}
           min={getTodayDate()}
-          onChange={(e) => setSelectedDate(e.target.value)}
+          onChange={(e) => {
+            setSelectedDate(e.target.value);
+            setSelectedTime('');
+          }}
           className="form-control"
           required
         />
@@ -108,8 +174,9 @@ const BookingPage = () => {
           required
         >
           <option value="">-- Select Time --</option>
-          {showTimes.map((time) => (
-            <option key={time} value={time}>{time}</option>
+          {filteredTimes.length === 0 && <option disabled>No available shows</option>}
+          {filteredTimes.map(time => (
+            <option key={time.label} value={time.label}>{time.label}</option>
           ))}
         </select>
       </div>
@@ -139,4 +206,3 @@ const BookingPage = () => {
 };
 
 export default BookingPage;
-

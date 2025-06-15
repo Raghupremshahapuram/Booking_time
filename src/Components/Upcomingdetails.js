@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './Upcoming.css';
 
 const UpcomingDetails = () => {
   const { id } = useParams();
@@ -9,7 +10,7 @@ const UpcomingDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("http://localhost:6700/upcomingMovies")
+    axios.get("https://movie-api-b9qw.onrender.com/upcomingMovies")
       .then(res => {
         const found = res.data.find((movie) => movie.id === id);
         setMovie(found);
@@ -25,12 +26,12 @@ const UpcomingDetails = () => {
   if (!movie) return <h2>Movie not found</h2>;
 
   return (
-    <div className="container mt-4">
+    <div className="upcoming.container mt-4">
       <h2>Upcoming Release</h2>
-      <div className="card">
-        <img src={movie.imageUrl} className="card-img-top" alt={movie.name} />
-        <div className="card-body">
-          <h5 className="card-title">{movie.name}</h5>
+      <div className="upcoming.card">
+        <img src={movie.imageUrl} className="upcoming.movie-poster" alt={movie.name} />
+        <div className="upcoming.card-body">
+          <h5 className="upcoming.card-title">{movie.name}</h5>
           <p><strong>Type:</strong> {movie.type}</p>
           <p><strong>Language:</strong> {movie.language}</p>
           <p><strong>Rating:</strong> {movie.rate}</p>

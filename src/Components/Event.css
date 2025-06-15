@@ -32,8 +32,10 @@
   
   /* Card content */
   .card-body {
-    padding: 20px;
-    background-color: #fff;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
   
   .card-title {

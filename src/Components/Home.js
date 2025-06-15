@@ -17,7 +17,7 @@ const Home = () => {
     const fetchMovies = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("https://movie-api-b9qw.onrender.com/api/latest");
+        const response = await axios.get("https://movie-api-b9qw.onrender.com/latest");
         dispatch(fetchMovieSucess(response.data)); 
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));
@@ -31,22 +31,23 @@ const Home = () => {
   if (error) return <h2>Error: {error}</h2>;
 
   return (
-    <div className="container">
-      <h1 className="my-4">Latest Movies</h1>
-      <div className="row">
-        {Array.isArray(latestMovies) && latestMovies.map((movie) => (
-          <div key={movie.id} className="col-md-4">
-            <div className="card mb-3">
-              <img src={movie.imageUrl} className="card-img-top" alt={movie.name} />
-              <div className="card-body">
-                <h5 className="card-title">{movie.name}</h5>
-                <Link to={`/movie/${movie.id}`} className="btn btn-primary">View Details</Link>
-              </div>
-            </div>
+       <div className="container-fluid">
+  <h1 className="my-4 text-center">Latest Movies</h1>
+  <div className="row justify-content-center">
+    {Array.isArray(latestMovies) && latestMovies.map((movie) => (
+      <div key={movie.id} className="col-sm-6 col-md-4 col-lg-3 mb-4">
+        <div className="card">
+          <img src={movie.imageUrl} className="movie-poster" alt={movie.name} />
+          <div className="card-body text-center">
+            <h5 className="card-title">{movie.name}</h5>
+            <Link to={`/movie/${movie.id}`} className="btn btn-primary">View Details</Link>
           </div>
-        ))}
+        </div>
       </div>
-    </div>
+    ))}
+  </div>
+</div>
+
   );
 };
 

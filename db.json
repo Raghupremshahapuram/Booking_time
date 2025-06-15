@@ -1,0 +1,140 @@
+{
+  "latest": [
+    {
+      "id": "5ab12666f36d2879268f2902",
+      "name": "Death Wish",
+      "language": "ENGLISH",
+      "type": "Action Crime Thriller",
+      "rate": 3.2,
+      "imageUrl": "https://image.ibb.co/gC9PfH/dw.jpg"
+    },
+    {
+      "id": "5ab12612f36d2879268f284a",
+      "name": "Black Panther",
+      "language": "ENGLISH",
+      "rate": 4.5,
+      "type": "Action Adventure Fantasy",
+      "imageUrl": "https://image.ibb.co/f0hhZc/bp.jpg"
+    },
+    {
+      "id": "5ab12678f36d2879268f291d",
+      "name": "Coco",
+      "language": "ENGLISH",
+      "type": "Adventure Animation Family",
+      "rate": 5,
+      "imageUrl": "https://image.ibb.co/dQwWSx/coco.jpg"
+    }
+  ],
+  "upcomingMovies": [
+    {
+      "id": "5ab126b6f36d2879268f2943",
+      "name": "Avengers",
+      "language": "ENGLISH",
+      "type": "Actione",
+      "rate": 2.5,
+      "imageUrl": "https://www.hindustantimes.com/rf/image_size_960x540/HT/p2/2018/04/01/Pictures/_46a0b2c0-3590-11e8-8c5f-3c6cc031651e.jpg"
+    },
+    {
+      "id": "5ab4e66b0c1d2b27846c6407",
+      "name": "Black Friday",
+      "language": "ENGLISH",
+      "rate": 4.5,
+      "type": "Action Adventure Fantasy",
+      "imageUrl": "https://image.ibb.co/f0hhZc/bp.jpg"
+    }
+  ],
+  "events": [
+    {
+      "id": "e101",
+      "title": "Music Fiesta 2024",
+      "date": "2024-07-15",
+      "time": "6:00 PM",
+      "venue": "Hyderabad Convention Centre",
+      "description": "Enjoy a night of electrifying music performances by top artists!",
+      "imageUrl": "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80"
+    },
+    {
+      "id": "e102",
+      "title": "Comedy Night Live",
+      "date": "2024-07-20",
+      "time": "8:00 PM",
+      "venue": "Bangalore Comedy Club",
+      "description": "Laugh out loud with India’s top stand-up comedians.",
+      "imageUrl": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e"
+    },
+    {
+      "id": "e103",
+      "title": "Drama Play - The Last Leaf",
+      "date": "2024-07-25",
+      "time": "7:30 PM",
+      "venue": "Chennai Kala Bhavan",
+      "description": "A heartfelt stage adaptation of O. Henry’s famous short story.",
+      "imageUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d"
+    },
+    {
+      "id": "e104",
+      "title": "Open Mic Night",
+      "date": "2024-08-02",
+      "time": "6:30 PM",
+      "venue": "Mumbai Arts Cafe",
+      "description": "A platform for poets, singers, and storytellers to perform live.",
+      "imageUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80"
+    }
+  ],
+  "users": [
+    {
+      "id": "1d53",
+      "username": "srinidhi",
+      "email": "srini@gmail.com",
+      "password": "123456"
+    },
+    {
+      "id": "b98c",
+      "username": "raghuprem",
+      "email": "raghupremshahapuram@gmail.com",
+      "password": "123456"
+    },
+    {
+      "id": "674a",
+      "username": "prem",
+      "email": "prem@123.com",
+      "password": "1234"
+    },
+    {
+      "id": "6035",
+      "username": "nidhi",
+      "email": "sri@nishi.com",
+      "password": "1234"
+    },
+    {
+      "id": "4427",
+      "username": "vasudeva",
+      "email": "vasu@deva.com",
+      "password": "1234"
+    }
+  ],
+  "bookings": [
+    
+    {
+      "id": "882d",
+      "user": "nidhi",
+      "movieId": "undefined",
+      "movieName": "Death Wish",
+      "date": "2025-05-25",
+      "time": "10:00 PM",
+      "seats": [
+        "Seat 25"
+      ]
+    },
+    {
+      "id": "23bc",
+      "user": "nidhi",
+      "eventId": "e101",
+      "eventName": "Music Fiesta 2024",
+      "date": "2025-05-25",
+      "seats": [
+        "Seat 25"
+      ]
+    }
+  ]
+}

@@ -1,18 +1,26 @@
-.card{
-    border-radius: 5%;
-    color: #981313;
-    margin-left:1%;
-    height:400px;
-    width:350px;
-    margin-top:2%;
+.card {
+  border-radius: 5%;
+  color: #981313;
+  height: 400px;
+  margin-top: 2%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  width: 100%; /* let Bootstrap control the size */
+}
+
+  
+  .card:hover { transform: scale(1.05); }
+  .movie-poster {
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+    border-top-left-radius: 5%;
+    border-top-right-radius: 5%;
+    background-color: #fff; /* fallback background */
   }
   
-  .card:hover { transform: scale(1.1) }
-  
-  .card-img-top{
-    width:250px;
-    height:220px;
-  }
+ 
   
   .headingh1{
     text-align: center;

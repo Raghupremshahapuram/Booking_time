@@ -8,19 +8,25 @@ const TicketPage = () => {
   const navigate = useNavigate();
   const bookingData = location.state;
 
+  if (!bookingData) return <p>No ticket data found.</p>;
+
+  // Fallback for title: show movieName or eventName
+  const title = bookingData.movie_name || bookingData.event_name || 'Unknown';
+
   const generateQRString = (data) => {
-    return `Movie: ${data.movieName}\nDate: ${data.date}\nTime: ${data.time}\nSeats: ${data.seats.join(', ')}`;
+    const seatArray = Array.isArray(data.seats) ? data.seats : data.seats.split(', ');
+    return `Title: ${title}\nDate: ${data.date}\nTime: ${data.time}\nSeats: ${seatArray.join(', ')}`;
   };
+  
 
   const handlePrint = () => {
     window.print();
   };
 
-  if (!bookingData) return <p>No ticket data found.</p>;
-
   return (
     <div className="booking-container ticket-page">
       <h2 className="no-print">🎫 Your Ticket</h2>
+
       <div className="qr-section">
         <div>
           <h4>Your Ticket QR Code:</h4>
@@ -33,22 +39,21 @@ const TicketPage = () => {
 
         <div className="ticket-details">
           <h4>Ticket Details</h4>
-          <p><strong>Movie:</strong> {bookingData.movieName}</p>
+          <p><strong>Title:</strong> {title}</p>
           <p><strong>Date:</strong> {bookingData.date}</p>
           <p><strong>Time:</strong> {bookingData.time}</p>
-          <p><strong>Seats:</strong> {bookingData.seats.join(', ')}</p>
+          <p><strong>Seats:</strong> {(Array.isArray(bookingData.seats) ? bookingData.seats : bookingData.seats.split(', ')).join(', ')}</p>
         </div>
       </div>
 
       <div className="no-print">
-  <button className="btn btn-primary me-2" onClick={handlePrint}>
-    Print / Download Ticket
-  </button>
-  <button className="btn btn-primary" onClick={() => navigate('/')}>
-    Book Another Ticket
-  </button>
-</div>
-
+        <button className="btn btn-primary me-2" onClick={handlePrint}>
+          Print / Download Ticket
+        </button>
+        <button className="btn btn-primary" onClick={() => navigate('/')}>
+          Book Another Ticket
+        </button>
+      </div>
     </div>
   );
 };

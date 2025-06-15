@@ -5,13 +5,18 @@ import './AppHeader.css';
 const AppHeader = () => {
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('loggedIn');
-  const username = localStorage.getItem('username') || 'User';
+  const userStr = localStorage.getItem('loggedInUser');
+  const username = userStr ? JSON.parse(userStr).name : 'User';
+  const user = userStr ? JSON.parse(userStr) : null;
 
-  const handleLogout = () => {
-    localStorage.removeItem('loggedIn');
-    localStorage.removeItem('username');
-    navigate('/login');
-  };
+  
+  
+
+const handleLogout = () => {
+  localStorage.removeItem('loggedIn');
+  localStorage.removeItem('loggedInUser');
+  navigate('/login');
+};
 
   return (
 
@@ -38,7 +43,8 @@ const AppHeader = () => {
     <div className="d-flex align-items-center">
       {isLoggedIn ? (
         <>
-          <span className="username me-3">👤 {username}</span>
+       
+         <span> <Link to={`/profile?name=${user.name}`} className="me-3 text-decoration-none text-light">👤 {username}</Link></span>
           <button onClick={handleLogout} className="btn btn-outline-light btn-sm">Logout</button>
         </>
       ) : (

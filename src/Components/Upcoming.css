@@ -1,0 +1,61 @@
+.upcoming-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  
+  .upcoming.h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: bold;
+    color: #222;
+  }
+  
+  .upcoming.card {
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    padding: 24px;
+    text-align: center;
+  }
+  
+  .upcoming.movie-poster {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .upcoming.card-body h5 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: #111;
+  }
+  
+  .upcoming.card-body p {
+    font-size: 16px;
+    margin: 6px 0;
+    color: #333;
+  }
+  
+  .upcoming.card-body strong {
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  
+  .upcoming.btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-weight: 500;
+    border-radius: 6px;
+    background-color: #343a40;
+    color: white;
+    border: none;
+    transition: 0.3s;
+  }
+  
+  .upcoming.btn:hover {
+    background-color: #23272b;
+  }
+  

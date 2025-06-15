@@ -1,36 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Booking.css';
-
-
-const getTodayDate = () => new Date().toISOString().split('T')[0];
 
 const EventBookingPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-  const [eventName, setEventName] = useState(location.state?.eventName || '');
-  const [loading, setLoading] = useState(!eventName);
-  const [selectedDate, setSelectedDate] = useState(getTodayDate());
+
+  const [eventDetails, setEventDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [bookingInProgress, setBookingInProgress] = useState(false);
 
   const seats = Array.from({ length: 30 }, (_, i) => `Seat ${i + 1}`);
 
-  useEffect(() => {
-    if (!eventName) {
-      axios.get('http://localhost:6700/events')
-        .then(res => {
-          const event = res.data.find(e => e.id === id);
-          if (event) setEventName(event.title);
-        })
-        .catch(err => console.error('Error fetching event:', err))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+  // Get logged in user
+  const getLoggedInUser = () => {
+    try {
+      const userStr = localStorage.getItem('loggedInUser');
+      if (!userStr) return null;
+      const user = JSON.parse(userStr);
+      return user?.name ? user : null;
+    } catch {
+      return null;
     }
-  }, [id, eventName]);
+  };
 
+  // Fetch event data
+  useEffect(() => {
+    axios.get(`https://movie-api-b9qw.onrender.com/events`)
+      .then(res => {
+        const event = res.data.find(e => String(e.id) === String(id)); // ✅ Fix ID match
+        if (event) {
+          setEventDetails(event);
+        } else {
+          alert("Event not found");
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching event:', err);
+        alert('Failed to load event data');
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  // Handle seat select/unselect
   const handleSeatChange = (seat) => {
     setSelectedSeats(prev =>
       prev.includes(seat)
@@ -39,37 +53,53 @@ const EventBookingPage = () => {
     );
   };
 
+  // Handle booking submission
   const handleBooking = () => {
-    if (!selectedDate || selectedSeats.length === 0) {
-      alert('Please select all fields');
+    if (selectedSeats.length === 0) {
+      alert('Please select at least one seat');
+      return;
+    }
+
+    const user = getLoggedInUser();
+    if (!user) {
+      alert('No logged-in user found. Please log in again.');
       return;
     }
 
     const bookingDetails = {
-      eventId: id,
-      eventName,
-      date: selectedDate,
+      userId: user.id,
+      name: user.name,
+      event_name: eventDetails.title,       // ✅ Consistent naming
+      event_id: eventDetails.id,            // ✅ Save event ID
+      date: eventDetails.date,
+      time: eventDetails.time,
+      venue: eventDetails.venue,
       seats: selectedSeats
     };
 
-    navigate('/ticket', { state: bookingDetails });
+    setBookingInProgress(true);
+    axios.post('https://postgres-movie.onrender.com/bookings', bookingDetails)
+      .then(() => {
+        navigate('/ticket', { state: bookingDetails });
+      })
+      .catch(err => {
+        console.error("Error saving booking:", err);
+        alert("Failed to book event. Please try again.");
+      })
+      .finally(() => setBookingInProgress(false));
   };
 
   if (loading) return <h3>Loading event info...</h3>;
+  if (!eventDetails) return <h3>Event not found</h3>;
 
   return (
     <div className="booking-container">
-      <h2>🎟️ Book Tickets for: <span className="movie-title">{eventName}</span></h2>
+      <h2>🎟️ Book Tickets for: <span className="movie-title">{eventDetails.title}</span></h2>
 
       <div className="form-group">
-        <label>Select Event Date:</label>
-        <input
-          type="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          className="form-control"
-          min={getTodayDate()}
-        />
+        <label><strong>Date:</strong> {eventDetails.date}</label><br />
+        <label><strong>Time:</strong> {eventDetails.time}</label><br />
+        <label><strong>Venue:</strong> {eventDetails.venue}</label>
       </div>
 
       <div className="form-group">
@@ -89,12 +119,15 @@ const EventBookingPage = () => {
         </div>
       </div>
 
-      <button className="btn btn-success mt-3" onClick={handleBooking}>
-        Confirm Booking
+      <button
+        className="btn btn-success mt-3"
+        onClick={handleBooking}
+        disabled={bookingInProgress}
+      >
+        {bookingInProgress ? "Booking..." : "Confirm Booking"}
       </button>
     </div>
   );
 };
 
 export default EventBookingPage;
-
