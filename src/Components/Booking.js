@@ -3,7 +3,6 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Booking.css';
 
-// Show timings with 24-hour values for filtering
 const showTimes = [
   { label: "10:00 AM", hour: 10 },
   { label: "1:00 PM", hour: 13 },
@@ -12,23 +11,20 @@ const showTimes = [
   { label: "10:00 PM", hour: 22 }
 ];
 
-// Get today's date in YYYY-MM-DD format
 const getTodayDate = () => {
   const today = new Date();
   return today.toISOString().split('T')[0];
 };
 
-// Check if the selected date is today
 const isToday = (selectedDate) => {
   const today = new Date();
   const selected = new Date(selectedDate);
   return today.toDateString() === selected.toDateString();
 };
 
-// Get current hour in 24-hour format
 const getCurrentHour = () => new Date().getHours();
 
-const seats = Array.from({ length: 30 }, (_, i) => `Seat ${i + 1}`);
+const seats = Array.from({ length: 60 }, (_, i) => `Seat ${i + 1}`);
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -42,6 +38,7 @@ const BookingPage = () => {
   const [selectedDate, setSelectedDate] = useState(getTodayDate());
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [checkingLogin, setCheckingLogin] = useState(true);
+  const [bookedSeats, setBookedSeats] = useState([]);
 
   const getLoggedInUser = () => {
     try {
@@ -87,7 +84,32 @@ const BookingPage = () => {
     setCheckingLogin(false);
   }, [id, movieName]);
 
+  useEffect(() => {
+    if (movieName && selectedDate && selectedTime) {
+      axios.get('https://postgres-movie.onrender.com/bookings', {
+        params: {
+          movie_name: movieName,
+          date: selectedDate,
+          time: selectedTime
+        }
+      })
+        .then(res => {
+          const booked = res.data.flatMap(b => {
+            if (typeof b.seats === 'string') {
+              return b.seats.split(',').map(s => s.trim());
+            } else if (Array.isArray(b.seats)) {
+              return b.seats;
+            }
+            return [];
+          });
+          setBookedSeats(booked);
+        })
+        .catch(err => console.error('Error fetching booked seats', err));
+    }
+  }, [movieName, selectedDate, selectedTime]);
+
   const handleSeatChange = (seat) => {
+    if (bookedSeats.includes(seat)) return;
     setSelectedSeats(prev =>
       prev.includes(seat)
         ? prev.filter(s => s !== seat)
@@ -110,29 +132,16 @@ const BookingPage = () => {
     const bookingDetails = {
       userId: user.id,
       name: user.name,
-      
-      movie_name: movieName, 
+      movie_name: movieName,
       event_name: null,
       date: selectedDate,
       time: selectedTime,
-      // seats: selectedSeats,
-      seats: selectedSeats.join(', ')
+      seats: selectedSeats
     };
-   
 
-    axios.post('https://postgres-movie.onrender.com/bookings', bookingDetails)
-    
-      .then(() => {
-        navigate('/ticket', { state: bookingDetails });
-      })
-      .catch(err => {
-        console.error("Error saving booking:", err);
-        alert("Failed to book ticket. Please try again.");
-      });
-      
+    navigate('/payment', { state: bookingDetails });
   };
 
-  // Filter show times based on current time if today is selected
   const filteredTimes = showTimes.filter(show => {
     if (isToday(selectedDate)) {
       return show.hour > getCurrentHour();
@@ -185,12 +194,13 @@ const BookingPage = () => {
         <label>Select Seats:</label>
         <div className="seat-grid">
           {seats.map(seat => (
-            <label key={seat} className="seat">
+            <label key={seat} className={`seat ${bookedSeats.includes(seat) ? 'booked' : ''}`}>
               <input
                 type="checkbox"
                 value={seat}
                 onChange={() => handleSeatChange(seat)}
                 checked={selectedSeats.includes(seat)}
+                disabled={bookedSeats.includes(seat)}
               />
               <span className="seat-label">{seat.split(' ')[1]}</span>
             </label>
@@ -199,7 +209,7 @@ const BookingPage = () => {
       </div>
 
       <button className="btn btn-success mt-3" onClick={handleBooking}>
-        Confirm Booking
+        Proceed to Payment
       </button>
     </div>
   );

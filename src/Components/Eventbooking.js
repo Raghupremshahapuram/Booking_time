@@ -10,11 +10,10 @@ const EventBookingPage = () => {
   const [eventDetails, setEventDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [bookingInProgress, setBookingInProgress] = useState(false);
+  const [bookedSeats, setBookedSeats] = useState([]);
 
-  const seats = Array.from({ length: 30 }, (_, i) => `Seat ${i + 1}`);
+  const seats = Array.from({ length: 60 }, (_, i) => `Seat ${i + 1}`);
 
-  // Get logged in user
   const getLoggedInUser = () => {
     try {
       const userStr = localStorage.getItem('loggedInUser');
@@ -26,11 +25,10 @@ const EventBookingPage = () => {
     }
   };
 
-  // Fetch event data
   useEffect(() => {
     axios.get(`https://movie-api-b9qw.onrender.com/events`)
       .then(res => {
-        const event = res.data.find(e => String(e.id) === String(id)); // ✅ Fix ID match
+        const event = res.data.find(e => String(e.id) === String(id));
         if (event) {
           setEventDetails(event);
         } else {
@@ -44,8 +42,32 @@ const EventBookingPage = () => {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // Handle seat select/unselect
+  useEffect(() => {
+    if (eventDetails) {
+      axios.get('https://postgres-movie.onrender.com/bookings', {
+        params: {
+          event_name: eventDetails.title,
+          date: eventDetails.date,
+          time: eventDetails.time
+        }
+      })
+        .then(res => {
+          const booked = res.data.flatMap(b => {
+            if (typeof b.seats === 'string') {
+              return b.seats.split(',').map(s => s.trim());
+            } else if (Array.isArray(b.seats)) {
+              return b.seats;
+            }
+            return [];
+          });
+          setBookedSeats(booked);
+        })
+        .catch(err => console.error('Error fetching booked seats', err));
+    }
+  }, [eventDetails]);
+
   const handleSeatChange = (seat) => {
+    if (bookedSeats.includes(seat)) return;
     setSelectedSeats(prev =>
       prev.includes(seat)
         ? prev.filter(s => s !== seat)
@@ -53,8 +75,7 @@ const EventBookingPage = () => {
     );
   };
 
-  // Handle booking submission
-  const handleBooking = () => {
+  const handleContinueToPayment = () => {
     if (selectedSeats.length === 0) {
       alert('Please select at least one seat');
       return;
@@ -69,24 +90,15 @@ const EventBookingPage = () => {
     const bookingDetails = {
       userId: user.id,
       name: user.name,
-      event_name: eventDetails.title,       // ✅ Consistent naming
-      event_id: eventDetails.id,            // ✅ Save event ID
+      event_name: eventDetails.title,
+      event_id: eventDetails.id,
       date: eventDetails.date,
       time: eventDetails.time,
       venue: eventDetails.venue,
       seats: selectedSeats
     };
 
-    setBookingInProgress(true);
-    axios.post('https://postgres-movie.onrender.com/bookings', bookingDetails)
-      .then(() => {
-        navigate('/ticket', { state: bookingDetails });
-      })
-      .catch(err => {
-        console.error("Error saving booking:", err);
-        alert("Failed to book event. Please try again.");
-      })
-      .finally(() => setBookingInProgress(false));
+    navigate('/payment', { state: bookingDetails });
   };
 
   if (loading) return <h3>Loading event info...</h3>;
@@ -106,12 +118,13 @@ const EventBookingPage = () => {
         <label>Select Seats:</label>
         <div className="seat-grid">
           {seats.map(seat => (
-            <label key={seat} className="seat">
+            <label key={seat} className={`seat ${bookedSeats.includes(seat) ? 'booked' : ''}`}>
               <input
                 type="checkbox"
                 value={seat}
                 onChange={() => handleSeatChange(seat)}
                 checked={selectedSeats.includes(seat)}
+                disabled={bookedSeats.includes(seat)}
               />
               <span className="seat-label">{seat.split(' ')[1]}</span>
             </label>
@@ -121,10 +134,9 @@ const EventBookingPage = () => {
 
       <button
         className="btn btn-success mt-3"
-        onClick={handleBooking}
-        disabled={bookingInProgress}
+        onClick={handleContinueToPayment}
       >
-        {bookingInProgress ? "Booking..." : "Confirm Booking"}
+        Continue to Payment
       </button>
     </div>
   );

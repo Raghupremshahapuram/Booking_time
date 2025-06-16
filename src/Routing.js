@@ -15,6 +15,7 @@ import EventBookingPage from './Components/Eventbooking.js';
 import'./App.css';
 import AppHeader from './Components/Appheader';
 import Profile from './Components/Profile.js';
+import PaymentPage from './Components/Paymentpage.js';
 
 
 const Routing = () => {
@@ -39,6 +40,7 @@ const Routing = () => {
                   <Route path="/event/:id" element={<EventDetails />} />
                   <Route path="/event-book/:id" element={<EventBookingPage />} />
                   <Route path="/profile" element={<Profile />} />
+                  <Route path="/payment" element={<PaymentPage/>} />
 
 
                 </Routes>

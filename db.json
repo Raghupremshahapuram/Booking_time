@@ -23,6 +23,88 @@
       "type": "Adventure Animation Family",
       "rate": 5,
       "imageUrl": "https://image.ibb.co/dQwWSx/coco.jpg"
+    },
+  
+   
+    {
+      "id": "tel001",
+      "name": "RRR",
+      "language": "TELUGU",
+      "type": "Action Drama Historical",
+      "rate": 4.8,
+      "imageUrl": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcRuPay6Isi8LPm8swvvGaUwTgC1AfQOjKFq0XomrB7NY5SsF5tbf2pstfwlWM1Qkfv-gJvsN9rSPcO0i8OiTqPwhJGda0--WyPOno8lyV4"
+    },
+    {
+     "id": "tel002",
+      "name": "Baahubali: The Beginning",
+      "language": "TELUGU",
+      "type": "Action Drama Fantasy",
+      "rate": 4.7,
+      "imageUrl": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSDRNYFW-fzP9z3YXbifCIkR-cQUyheoG6gdL1hkdIKT20OKGOF"
+    }
+    {
+      "id": "tel003",
+     "name": "Baahubali 2: The Conclusion",
+      "language": "TELUGU",
+      "type": "Action Drama Historical",
+      "rate": 4.9,
+      "imageUrl": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTnMA16Y55ki6WxoLTdTmxNnKwYCZiNwi0DvCakttCRBQgZyJpJ"
+    },
+    {
+      "id": "tel004",
+      "name": "Pushpa: The Rise",
+      "language": "TELUGU",
+      "type": "Action Crime Thriller",
+      "rate": 4.4,
+      "imageUrl": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcTEBj8p-ynRkaIk4luHnF02ahyCJ6epbBOt_6dTS5fBWs7rqC-E"
+    },
+    {
+      "id": "tel005",
+     "name": "Ala Vaikunthapurramuloo",
+      "language": "TELUGU",
+      "type": "Action Drama Family",
+      "rate": 4.3,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6FsCkliOP2vJVqMX_L0SLSzJvRhtoP5Ntd5Kjocwyiui3KMj1"
+    },
+    {
+      "id": "tel006",
+      "name": "Jathi Ratnalu",
+      "language": "TELUGU",
+      "type": "Comedy Drama",
+     "rate" : 4.2,
+      "imageUrl": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTqQ4xqC_EiC-EoxESk5qJUOpzAVfiZcQJXSYbDU-yDzL9JC4xg"
+    },
+    {
+      "id": "tel007",
+      "name": "Sita Ramam",
+      "language": "TELUGU",
+      "type":"Romance Drama",
+      "rate": 4.6,
+      "imageUrl": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQzStNSFt_Of45IA813SS-sHZPYFZN_yU94Ofhna7ebKlWnpfCq"
+    },
+    {
+      "id": "tel008",
+      "name": "Dasara",
+      "language": "TELUGU",
+      "type": "Action Drama",
+      "rate": 4.1,
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREcAY5AuMFftkNx3uasFi5BmsCRrL9UTu6gsj-1gz_0zMSLFYs"
+    },
+    {
+      "id": "tel009",
+      "name": "Hi Nanna",
+      "language": "TELUGU",
+      "type": "Drama Family Romance",
+      "rate": 4.5,
+      "imageUrl": "https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcTvIT88hfZZY_vRTCIoM78ZhzBbgl9LV5nL-cDaw8Y9_dacVHdN"
+    },
+    {
+      "id": "tel010",
+      "name": "Eega",
+      "language": "TELUGU",
+      "type": "Action Fantasy Thriller",
+      "rate": 4.0,
+      "imageUrl": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQPo6YUQbjXGjCF92s4zL5ishjRlHO5NqNHcosFSHPmSKB4NRav"
     }
   ],
   "upcomingMovies": [
