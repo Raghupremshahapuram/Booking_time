@@ -18,6 +18,14 @@ const Profile = () => {
   const bookingRefs = useRef({});
 
   useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [darkMode]);
+
+  useEffect(() => {
     if (name) {
       axios
         .get(`https://postgres-movie.onrender.com/bookings?name=${name}`)
@@ -27,9 +35,9 @@ const Profile = () => {
   }, [name]);
 
   const convertTo24Hour = (timeStr) => {
-    if (!timeStr) return { hours: 23, minutes: 59 }; // Default to end of day
+    if (!timeStr) return { hours: 23, minutes: 59 };
     const [time, modifier] = timeStr.split(" ");
-    let [hours, minutes] = time.split(":").map(Number);
+    let [hours, minutes] = time.split(":" ).map(Number);
     if (modifier === "PM" && hours !== 12) hours += 12;
     if (modifier === "AM" && hours === 12) hours = 0;
     return { hours, minutes };
@@ -39,7 +47,7 @@ const Profile = () => {
     const date = new Date(booking.date);
     const now = new Date();
 
-    const timeString = booking.time || booking.eventTime || ""; // Might be blank
+    const timeString = booking.time || booking.eventTime || "";
     const { hours, minutes } = convertTo24Hour(timeString);
 
     date.setHours(hours);
@@ -131,15 +139,15 @@ const Profile = () => {
                     ⏰ Time: {booking.time || "Not specified"}
                   </p>
                   <p>
-                    💺 Seats:{" "}
-                    {Array.isArray(booking.seats)
-                      ? booking.seats.join(", ")
-                      : booking.seats}
+                    💺 Seats: {Array.isArray(booking.seats) ? booking.seats.join(", ") : booking.seats}
                   </p>
 
                   <div className="mt-2">
                     <p className="mb-1">🎫 Booking QR:</p>
-                    <QRCodeCanvas value={booking.id} size={100} />
+                                     <QRCodeCanvas size={150}
+    value={`E-Cube Ticket 🎫\nType: ${booking.movie_name ? "Movie" : "Event"}\nTitle: ${booking.movie_name || booking.event_name}\nDate: ${new Date(booking.date).toLocaleDateString()}\nTime: ${booking.time}\nSeats: ${booking.seats}\nBooked By: ${booking.name}`}
+/>
+
                   </div>
 
                   <div className="mt-3 d-flex flex-wrap gap-2">

@@ -1,47 +1,88 @@
 /* Profile.css */
 
-/* Dark Mode Support */
-.dark-mode {
-    background-color: #121212;
-    color: #ffffff;
+/* Light mode base */
+body {
+  background-color: #f8f9fa;
+  color: #212529;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body.dark-mode .card {
+  background-color: #1e1e1e;
+  border-color: #333;
+}
+
+body.dark-mode .btn {
+  border-color: #ccc;
+  color: #fff;
+}
+
+body.dark-mode .btn-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+body.dark-mode .btn-outline-primary {
+  color: #90caf9;
+  border-color: #90caf9;
+}
+
+body.dark-mode .btn-outline-primary:hover {
+  background-color: #90caf9;
+  color: #000;
+}
+
+/* Thank You Animation */
+.thank-you-message {
+  font-size: 1rem;
+  color: #82dd97;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+/* Fade In Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
-  
-  .dark-mode .card {
-    background-color: #1e1e1e;
-    border-color: #333;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
-  
-  .dark-mode .btn {
-    border-color: #ccc;
+}
+
+/* Responsive Cards */
+@media (max-width: 768px) {
+  .card {
+    margin-bottom: 1rem;
   }
-  
-  /* Thank You Animation */
+
   .thank-you-message {
-    font-size: 1rem;
-    color: #28a745;
-    animation: fadeInUp 1s ease-in-out;
+    font-size: 0.9rem;
   }
-  
-  /* Fade In Animation */
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  /* Responsive Cards */
-  @media (max-width: 768px) {
-    .card {
-      margin-bottom: 1rem;
-    }
-  
-    .thank-you-message {
-      font-size: 0.9rem;
-    }
-  }
-  
+}
+.dark-mode .card-body h5 {
+  color: #ffd700; /* Gold for title */
+}
+
+.dark-mode .card-body p:nth-of-type(1) {
+  color: #00bcd4; /* Cyan for Date */
+}
+
+.dark-mode .card-body p:nth-of-type(2) {
+  color: #ff9800; /* Orange for Time */
+}
+
+.dark-mode .card-body p:nth-of-type(3) {
+  color: #8bc34a; /* Green for Seats */
+}
+
+.dark-mode .card-body p:nth-of-type(4) {
+  color: #f06292; /* Pink for Booking QR label */
+}
