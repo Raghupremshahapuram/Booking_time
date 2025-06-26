@@ -1,52 +1,57 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { FaGoogle, FaFacebook } from 'react-icons/fa';
 import './Login.css';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
-  const [name, setName] = useState('');
-
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
   const fromPath = location.state?.from || '/';
 
-  
+  const validateEmail = (email) => {
+    // Simple regex for email validation
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
-  
-    if (name && password) {
-      try {
-        const res = await axios.get(`https://postgres-movie.onrender.com/users`);
-        const users = res.data;
-  
-        // Exact match filter
-        const matchedUser = users.find(
-          (u) => u.name === name && u.password === password
-        );
-  
-        if (matchedUser) {
-          localStorage.setItem('loggedIn', 'true');
-          localStorage.setItem('loggedInUser', JSON.stringify(matchedUser));
-          toast.success('Login successful');
-          navigate(fromPath);
-        } else {
-          toast.error('Invalid username or password');
-        }
-      } catch (err) {
-        console.error('Login error:', err);
-        toast.error('Login failed. Please try again.');
+
+    if (!email || !password) {
+      toast.warn('Please enter both email and password');
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      const res = await axios.get(`https://postgres-movie.onrender.com/users`);
+      const users = res.data;
+
+      const matchedUser = users.find(
+        (u) => u.email === email && u.password === password
+      );
+
+      if (matchedUser) {
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('loggedInUser', JSON.stringify(matchedUser));
+        toast.success('Login successful');
+        navigate(fromPath);
+      } else {
+        toast.error('Invalid email or password');
       }
-    } else {
-      toast.warn('Please enter both username and password');
+    } catch (err) {
+      console.error('Login error:', err);
+      toast.error('Login failed. Please try again.');
     }
   };
-  
-  
 
   const handleSocialLogin = (provider) => {
     toast.success(`Logged in with ${provider}`);
@@ -60,20 +65,34 @@ const LoginPage = () => {
       <div className="login-container">
         <h2>Login to Continue</h2>
         <form onSubmit={handleLogin} className="form-group">
-         
-          <label>UserName:</label>
-            < input className="form-control" value={name} onChange={(e) => setName(e.target.value)} />
+          <label>Email:</label>
+          <input
+            type="email"
+            className="form-control"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="example@mail.com"
+            required
+          />
 
+          <label className="mt-3">Password:</label>
+          <input
+            type="password"
+            className="form-control"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            required
+          />
 
-          <label>Password:</label>
-          <input className="form-control" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-
-          <button type="submit" className="btn btn-primary mt-3">Login</button>
+          <button type="submit" className="btn btn-primary mt-3">
+            Login
+          </button>
         </form>
-        <p className="mt-3">
-  New user? <Link to="/register">Register here</Link>
-</p>
 
+        <p className="mt-3">
+          New user? <Link to="/register">Register here</Link>
+        </p>
 
         <div className="social-login">
           <p style={{ margin: '20px 0 10px' }}>Or login with:</p>
