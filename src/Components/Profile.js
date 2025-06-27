@@ -1,29 +1,22 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./Profile.css";
+import { ThemeContext } from '../context/ThemeContext';
 
 const Profile = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const name = queryParams.get("name");
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
 
   const [bookings, setBookings] = useState([]);
   const [showUpcoming, setShowUpcoming] = useState(true);
   const [copiedId, setCopiedId] = useState(null);
-  const [darkMode, setDarkMode] = useState(false);
   const bookingRefs = useRef({});
-
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
-  }, [darkMode]);
 
   useEffect(() => {
     if (name) {
@@ -46,7 +39,6 @@ const Profile = () => {
   const filteredBookings = bookings.filter((booking) => {
     const date = new Date(booking.date);
     const now = new Date();
-
     const timeString = booking.time || booking.eventTime || "";
     const { hours, minutes } = convertTo24Hour(timeString);
 
@@ -88,13 +80,11 @@ const Profile = () => {
     });
   };
 
-  const toggleDarkMode = () => setDarkMode(!darkMode);
-
   return (
     <div className={`container mt-4 ${darkMode ? "dark-mode" : ""}`}>
       <div className="d-flex justify-content-between align-items-center">
         <h2>Welcome, {name}</h2>
-        <button className="btn btn-sm btn-dark" onClick={toggleDarkMode}>
+        <button className="btn btn-sm btn-dark" onClick={toggleTheme}>
           {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
         </button>
       </div>
@@ -127,27 +117,22 @@ const Profile = () => {
               <div className="card h-100">
                 <div className="card-body">
                   <h5>
-                    🎬{" "}
-                    {booking.movie_name
+                    🎬 {booking.movie_name
                       ? `Movie: ${booking.movie_name}`
                       : booking.event_name
                       ? `Event: ${booking.event_name}`
                       : "N/A"}
                   </h5>
                   <p>📅 Date: {new Date(booking.date).toLocaleDateString()}</p>
-                  <p>
-                    ⏰ Time: {booking.time || "Not specified"}
-                  </p>
-                  <p>
-                    💺 Seats: {Array.isArray(booking.seats) ? booking.seats.join(", ") : booking.seats}
-                  </p>
+                  <p>⏰ Time: {booking.time || "Not specified"}</p>
+                  <p>💺 Seats: {Array.isArray(booking.seats) ? booking.seats.join(", ") : booking.seats}</p>
 
                   <div className="mt-2">
                     <p className="mb-1">🎫 Booking QR:</p>
-                                     <QRCodeCanvas size={150}
-    value={`E-Cube Ticket 🎫\nType: ${booking.movie_name ? "Movie" : "Event"}\nTitle: ${booking.movie_name || booking.event_name}\nDate: ${new Date(booking.date).toLocaleDateString()}\nTime: ${booking.time}\nSeats: ${booking.seats}\nBooked By: ${booking.name}`}
-/>
-
+                    <QRCodeCanvas
+                      size={150}
+                      value={`E-Cube Ticket 🎫\nType: ${booking.movie_name ? "Movie" : "Event"}\nTitle: ${booking.movie_name || booking.event_name}\nDate: ${new Date(booking.date).toLocaleDateString()}\nTime: ${booking.time}\nSeats: ${booking.seats}\nBooked By: ${booking.name}`}
+                    />
                   </div>
 
                   <div className="mt-3 d-flex flex-wrap gap-2">
