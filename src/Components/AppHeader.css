@@ -78,4 +78,22 @@
     color: #00ffff; /* Aqua blue */
     font-weight: bold;
   }
+  .brand-color {
+    color: #0072f5 !important; /* Your referral theme color */
+  }
+  
+  .brand-btn {
+    background-color: #0072f5;
+    color: white;
+    border: none;
+  }
+  
+  .brand-btn:hover {
+    background-color: #005bbf;
+    color: white;
+  }
+  .nav-link:hover {
+    font-weight: 500;
+    text-decoration: underline;
+  }
   

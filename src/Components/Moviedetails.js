@@ -11,9 +11,12 @@ const MovieDetails = () => {
   const [loading, setLoading] = useState(true);
   const { darkMode } = useContext(ThemeContext);
 
+  // ✅ Suppress ESLint dependency warning (setMovie is safe to omit)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     axios.get("https://movie-api-b9qw.onrender.com/latest")
       .then(res => {
+        // ✅ Correct comparison between movie.id and URL param
         const found = res.data.find((movie) => String(movie.id) === String(id));
         setMovie(found);
       })
@@ -36,7 +39,14 @@ const MovieDetails = () => {
   return (
     <div className={`movie-detail-vertical ${darkMode ? 'dark-mode' : ''}`}>
       <div className="movie-detail-card">
-        <img src={movie.imageUrl} className="movie-full-image" alt={movie.name} />
+        <img 
+          src={movie.imageUrl} 
+          className="movie-full-image" 
+          alt={movie.name} 
+          onError={(e) => {
+            e.currentTarget.src = 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=400';
+          }}
+        />
         <div className="movie-info">
           <h2>{movie.name}</h2>
           <p><strong>Language:</strong> {movie.language}</p>
@@ -46,7 +56,7 @@ const MovieDetails = () => {
       </div>
 
       <div className="movie-button-group">
-        <Link to={`/book/${movie._id}`} state={{ movieName: movie.name }}>
+        <Link to={`/book/${movie.id}`} state={{ movieName: movie.name }}>
           <button className="btn btn-primary">Book Now</button>
         </Link>
         <button className="btn btn-outline-primary" onClick={() => navigate(-1)}>← Back</button>

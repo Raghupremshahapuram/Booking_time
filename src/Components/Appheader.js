@@ -1,67 +1,77 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './AppHeader.css';
 import { ThemeContext } from '../context/ThemeContext';
+import './AppHeader.css';
 
 const AppHeader = () => {
   const navigate = useNavigate();
   const isLoggedIn = localStorage.getItem('loggedIn');
   const userStr = localStorage.getItem('loggedInUser');
-  const username = userStr ? JSON.parse(userStr).name : 'User';
   const user = userStr ? JSON.parse(userStr) : null;
+  const username = user?.name || 'User';
 
   const { darkMode } = useContext(ThemeContext);
 
+  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('loggedInUser');
     navigate('/login');
   };
 
-  // Choose dynamic class
-  const navClass = darkMode
-    ? 'navbar navbar-dark bg-dark px-3'
-    : 'navbar navbar-light bg-light px-3';
-
-  const linkClass = darkMode ? 'text-white' : 'text-dark';
-
   return (
-    <nav className={navClass}>
-      <div className="container-fluid d-flex justify-content-between align-items-center">
-        
-        {/* Left: Brand + Links */}
+    <nav className={`navbar navbar-expand-lg ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} border-bottom`}>
+      <div className="container-fluid px-4">
+
+        {/* Left: Brand + Navigation */}
         <div className="d-flex align-items-center">
-          <Link className={`navbar-brand fw-bold ${linkClass} me-4`} to="/">🎬 E-Cube</Link>
-          <ul className="navbar-nav flex-row">
-            <li className="nav-item me-3">
-              <Link className={`nav-link ${linkClass}`} to="/">Latest Movies</Link>
-            </li>
-            <li className="nav-item me-3">
-              <Link className={`nav-link ${linkClass}`} to="/Upcoming">Upcoming Movies</Link>
-            </li>
-            <li className="nav-item me-3">
-              <Link className={`nav-link ${linkClass}`} to="/Event">Events</Link>
-            </li>
-          </ul>
+          <Link className="navbar-brand fw-bold brand-color me-4" to="/">
+            <span className="me-2">🎬</span>
+            E-Cube
+          </Link>
+
+          <div className="d-none d-md-flex">
+  <Link className={`nav-link me-3 ${darkMode ? 'text-light' : 'text-muted'}`} to="/">
+    Latest Movies
+  </Link>
+  <Link className={`nav-link me-3 ${darkMode ? 'text-light' : 'text-muted'}`} to="/upcoming">
+    Upcoming Movies
+  </Link>
+  <Link className={`nav-link me-3 ${darkMode ? 'text-light' : 'text-muted'}`} to="/event">
+    Events
+  </Link>
+</div>
+
         </div>
 
         {/* Right: User Info / Login */}
         <div className="d-flex align-items-center">
+          <span className={`fw-bold me-3 ${darkMode ? 'text-light' : 'text-dark'}`}>
+            Movie Ticket
+          </span>
+
           {isLoggedIn ? (
-            <>
-              <span>
-                <Link to={`/profile?name=${user.name}`} className={`me-3 text-decoration-none ${linkClass}`}>
-                  👤 {username}
-                </Link>
-              </span>
-              <button onClick={handleLogout} className={`btn btn-sm ${darkMode ? 'btn-outline-light' : 'btn-outline-dark'}`}>
+            <div className="d-flex align-items-center">
+              <Link
+  to={`/profile?name=${username}`}
+  className={`text-decoration-none me-3 fw-semibold ${darkMode ? 'text-info' : 'text-primary'}`}
+>
+                <i className="bi bi-person-circle me-1"></i>
+                {username}
+              </Link>
+              <button onClick={handleLogout} className="btn btn-sm brand-btn">
+                <i className="bi bi-box-arrow-right me-1"></i>
                 Logout
               </button>
-            </>
+            </div>
           ) : (
-            <Link to="/login" className={`btn btn-sm ${darkMode ? 'btn-outline-light' : 'btn-outline-primary'}`}>
-              Login
-            </Link>
+            <div className="d-flex align-items-center">
+              <i className="bi bi-person-circle me-2"></i>
+              <span className={`me-3 ${darkMode ? 'text-light' : 'text-dark'}`}>{username}</span>
+              <Link to="/login" className="btn btn-sm brand-btn">
+                Login
+              </Link>
+            </div>
           )}
         </div>
 
