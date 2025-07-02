@@ -11,58 +11,34 @@ const showTimes = [
   { label: "10:00 PM", hour: 22 }
 ];
 
-const getTodayDate = () => {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-};
-
-const isToday = (selectedDate) => {
-  const today = new Date();
-  const selected = new Date(selectedDate);
-  return today.toDateString() === selected.toDateString();
-};
-
+const pricePerSeat = 120;
+const getTodayDate = () => new Date().toISOString().split('T')[0];
 const getCurrentHour = () => new Date().getHours();
-
+const isToday = (selectedDate) => new Date().toDateString() === new Date(selectedDate).toDateString();
 const seats = Array.from({ length: 60 }, (_, i) => `Seat ${i + 1}`);
 
 const BookingPage = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-
   const [movieName, setMovieName] = useState(location.state?.movieName || sessionStorage.getItem('movieName') || '');
+
   const [loading, setLoading] = useState(!movieName);
   const [error, setError] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [selectedDate, setSelectedDate] = useState(getTodayDate());
   const [selectedSeats, setSelectedSeats] = useState([]);
-  const [checkingLogin, setCheckingLogin] = useState(true);
   const [bookedSeats, setBookedSeats] = useState([]);
 
-  const getLoggedInUser = () => {
-    try {
-      const userStr = localStorage.getItem('loggedInUser');
-      if (!userStr) return null;
-      const user = JSON.parse(userStr);
-      return user?.name ? user : null;
-    } catch {
-      return null;
+  const filteredTimes = showTimes.filter(show => {
+    if (isToday(selectedDate)) {
+      return show.hour > getCurrentHour();
     }
-  };
+    return true;
+  });
 
   useEffect(() => {
     if (!movieName) {
-      const storedName = sessionStorage.getItem('movieName');
-      if (storedName) {
-        setMovieName(storedName);
-      }
-    }
-  }, [movieName]);
-
-  useEffect(() => {
-    if (!movieName) {
-      setLoading(true);
       axios.get(`https://movie-api-b9qw.onrender.com/latest?id=${id}`)
         .then(res => {
           const fetchedName = res.data[0]?.name;
@@ -81,27 +57,17 @@ const BookingPage = () => {
     } else {
       setLoading(false);
     }
-    setCheckingLogin(false);
   }, [id, movieName]);
 
   useEffect(() => {
     if (movieName && selectedDate && selectedTime) {
       axios.get('https://postgres-movie.onrender.com/bookings', {
-        params: {
-          movie_name: movieName,
-          date: selectedDate,
-          time: selectedTime
-        }
+        params: { movie_name: movieName, date: selectedDate, time: selectedTime }
       })
         .then(res => {
-          const booked = res.data.flatMap(b => {
-            if (typeof b.seats === 'string') {
-              return b.seats.split(',').map(s => s.trim());
-            } else if (Array.isArray(b.seats)) {
-              return b.seats;
-            }
-            return [];
-          });
+          const booked = res.data.flatMap(b =>
+            typeof b.seats === 'string' ? b.seats.split(',').map(s => s.trim()) : b.seats || []
+          );
           setBookedSeats(booked);
         })
         .catch(err => console.error('Error fetching booked seats', err));
@@ -111,9 +77,7 @@ const BookingPage = () => {
   const handleSeatChange = (seat) => {
     if (bookedSeats.includes(seat)) return;
     setSelectedSeats(prev =>
-      prev.includes(seat)
-        ? prev.filter(s => s !== seat)
-        : [...prev, seat]
+      prev.includes(seat) ? prev.filter(s => s !== seat) : [...prev, seat]
     );
   };
 
@@ -123,7 +87,8 @@ const BookingPage = () => {
       return;
     }
 
-    const user = getLoggedInUser();
+    const userStr = localStorage.getItem('loggedInUser');
+    const user = userStr ? JSON.parse(userStr) : null;
     if (!user) {
       alert('No logged-in user found. Please log in again.');
       return;
@@ -133,7 +98,6 @@ const BookingPage = () => {
       userId: user.id,
       name: user.name,
       movie_name: movieName,
-      event_name: null,
       date: selectedDate,
       time: selectedTime,
       seats: selectedSeats
@@ -142,56 +106,63 @@ const BookingPage = () => {
     navigate('/payment', { state: bookingDetails });
   };
 
-  const filteredTimes = showTimes.filter(show => {
-    if (isToday(selectedDate)) {
-      return show.hour > getCurrentHour();
-    }
-    return true;
-  });
-
-  if (checkingLogin) return <h3>Checking login status...</h3>;
   if (loading) return <h3>Loading movie info...</h3>;
   if (error) return <h3 style={{ color: 'red' }}>{error}</h3>;
 
   return (
+    
     <div className="booking-container">
-      <h2>🎬 Book Tickets for: <span className="movie-title">{movieName}</span></h2>
+      <div className="card border-0 rounded-4 shadow mb-4" style={{ background: 'linear-gradient(to right, #3b82f6, #8b5cf6)', color: '#fff' }}>
+  <div className="card-body p-4">
+    <div className="d-flex align-items-start gap-3">
+      <div className="bg-white bg-opacity-25 p-3 rounded">
+        <i className="bi bi-film fs-2"></i>
+      </div>
+      <div>
+        
+        <h3 className="fw-bold">Book Tickets for: {movieName || 'Loading...'}</h3>
 
-      <div className="form-group">
-        <label htmlFor="date">Select Show Date:</label>
+        <p className="mb-0">Select your preferred showtime and seats</p>
+      </div>
+    </div>
+
+    <div className="row mt-4">
+      <div className="col-md-6 mb-3">
+        <label className="fw-semibold">Select Show Date:</label>
         <input
-          id="date"
           type="date"
+          className="form-control bg-transparent text-white border border-white"
           value={selectedDate}
           min={getTodayDate()}
           onChange={(e) => {
             setSelectedDate(e.target.value);
             setSelectedTime('');
           }}
-          className="form-control"
-          required
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="time">Select Show Time:</label>
-        <select
-          id="time"
-          value={selectedTime}
-          onChange={(e) => setSelectedTime(e.target.value)}
-          className="form-control"
-          required
-        >
-          <option value="">-- Select Time --</option>
-          {filteredTimes.length === 0 && <option disabled>No available shows</option>}
-          {filteredTimes.map(time => (
-            <option key={time.label} value={time.label}>{time.label}</option>
+      <div className="col-md-6">
+        <label className="fw-semibold">Select Show Time:</label>
+        <div className="d-flex flex-wrap gap-2 mt-2">
+          {filteredTimes.map((show) => (
+            <button
+              key={show.label}
+              className={`btn btn-outline-light ${selectedTime === show.label ? 'bg-white text-primary fw-bold' : ''}`}
+              onClick={() => setSelectedTime(show.label)}
+            >
+              <i className="bi bi-clock me-1"></i>
+              {show.label}
+            </button>
           ))}
-        </select>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+     
 
       <div className="form-group">
-        <label>Select Seats:</label>
+        <div className="text-center fw-bold py-2">SCREEN</div>
         <div className="seat-grid">
           {seats.map(seat => (
             <label key={seat} className={`seat ${bookedSeats.includes(seat) ? 'booked' : ''}`}>
@@ -208,9 +179,63 @@ const BookingPage = () => {
         </div>
       </div>
 
-      <button className="btn btn-success mt-3" onClick={handleBooking}>
-        Proceed to Payment
-      </button>
+      <div className="mt-4 d-flex justify-content-center gap-4 align-items-center">
+        <div className="d-flex align-items-center gap-2">
+          <span className="rounded" style={{ width: '18px', height: '18px', backgroundColor: '#f0f0f0', display: 'inline-block' }}></span>
+          <span className="text-muted">Available</span>
+        </div>
+        <div className="d-flex align-items-center gap-2">
+          <span className="rounded" style={{ width: '18px', height: '18px', background: 'linear-gradient(to right, #6366F1, #8B5CF6)', display: 'inline-block' }}></span>
+          <span className="text-muted">Selected</span>
+        </div>
+        <div className="d-flex align-items-center gap-2">
+          <span className="rounded" style={{ width: '18px', height: '18px', backgroundColor: '#fecaca', display: 'inline-block' }}></span>
+          <span className="text-muted">Occupied</span>
+        </div>
+      </div>
+
+      <div className="card border-0 shadow rounded-4 mt-4">
+  <div className="card-body p-4">
+    <div className="d-flex justify-content-between align-items-center mb-3">
+      <h5 className="fw-bold mb-0">Booking Summary</h5>
+      <span className="text-muted">
+        <i className="bi bi-people me-1"></i>
+        {selectedSeats.length} {selectedSeats.length === 1 ? 'seat' : 'seats'}
+      </span>
+    </div>
+    <p className="text-muted">Price per seat:</p>
+    <h6 className="text-end">₹{pricePerSeat}</h6>
+    <hr />
+    <div className="d-flex justify-content-between align-items-center">
+      <span>Subtotal:</span>
+      <span>₹{selectedSeats.length * pricePerSeat}</span>
+    </div>
+    <div className="d-flex justify-content-between align-items-center">
+    <span>Tax :</span>
+<span>₹{(selectedSeats.length > 0 ? (pricePerSeat * 0.25).toFixed(2) : '0.00')}</span>
+
+    </div>
+    <hr />
+    <div className="d-flex justify-content-between align-items-center">
+      <strong>Total:</strong>
+      <strong className="text-primary">
+  ₹{(selectedSeats.length * pricePerSeat + (selectedSeats.length > 0 ? pricePerSeat * 0.25 : 0)).toFixed(2)}
+</strong>
+
+    </div>
+
+    <button
+      className="btn btn-primary w-100 mt-4 py-2"
+      disabled={selectedSeats.length === 0 || !selectedTime}
+      onClick={handleBooking}
+    >
+      <i className="bi bi-credit-card me-2"></i>
+      Proceed to Payment
+    </button>
+  </div>
+</div>
+
+
     </div>
   );
 };

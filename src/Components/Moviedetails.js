@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ThemeContext } from '../context/ThemeContext';
 import './Moviedetails.css';
@@ -22,6 +22,17 @@ const MovieDetails = () => {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleBookNow = () => {
+    const isLoggedIn = localStorage.getItem('loggedIn');
+    if (!isLoggedIn) {
+      // Save movie name temporarily
+      sessionStorage.setItem('moviename', movie.title);
+      navigate('/login', { state: { from: `/book/${movie.id}` } });
+    } else {
+      navigate(`/book/${movie.id}`, { state: { movieName: movie.name } });
+    }
+  };
 
   if (loading) {
     return (
@@ -72,10 +83,19 @@ const MovieDetails = () => {
           </div>
 
           <div className="mt-5 d-flex gap-3 flex-wrap">
-          
-            <Link to={`/book/${movie._id}`} state={{ movieName: movie.name }}>
-              <button className="btn btn-outline-primary px-4 py-2 rounded-3 shadow">🎟️ Book Tickets</button>
-            </Link>
+
+          <button
+  className="btn btn-outline-primary px-4 py-2 rounded-3 shadow"
+  onClick={handleBookNow}
+>
+  🎟️ Book Tickets
+</button>
+          {/* <button 
+            className="btn btn-outline-primary px-4 py-2 rounded-3 shadow" 
+            onClick={handleBookNow}
+          >
+            🎟️ Book Tickets
+          </button> */}
             <button className="btn btn-link text-decoration-none" onClick={() => navigate(-1)}>
               ← Back to Movies
             </button>
