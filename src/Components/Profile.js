@@ -1,17 +1,15 @@
-import React, { useEffect, useState, useRef, useContext } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { QRCodeCanvas } from "qrcode.react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./Profile.css";
-import { ThemeContext } from '../context/ThemeContext';
-
 const Profile = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const name = queryParams.get("name");
-  const { darkMode, toggleTheme } = useContext(ThemeContext);
+  
 
   const [bookings, setBookings] = useState([]);
   const [showUpcoming, setShowUpcoming] = useState(true);
@@ -81,13 +79,8 @@ const Profile = () => {
   };
 
   return (
-    <div className={`container mt-4 ${darkMode ? "dark-mode" : ""}`}>
-      <div className="d-flex justify-content-between align-items-center">
-        <h2>Welcome, {name}</h2>
-        <button className="btn btn-sm btn-dark" onClick={toggleTheme}>
-          {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-        </button>
-      </div>
+    <div>
+      
 
       <div className="mt-3 mb-4">
         <button

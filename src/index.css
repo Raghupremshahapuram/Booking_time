@@ -11,3 +11,63 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+/* === Base Reset === */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* === Typography === */
+body {
+  font-family: 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === Responsive Utilities === */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+/* === Responsive Image === */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* === Media Queries === */
+@media (min-width: 768px) {
+  .flex-md-row {
+    flex-direction: row !important;
+  }
+
+  .text-md-center {
+    text-align: center !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .show-lg {
+    display: block;
+  }
+}
+/* index.css (or App.css) */
+button,
+.card {
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Optional: add global container responsiveness */
+.container {
+  width: 100%;
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}

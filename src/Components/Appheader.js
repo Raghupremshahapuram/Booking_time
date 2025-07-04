@@ -1,18 +1,17 @@
 import React, { useContext } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../context/ThemeContext';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import './AppHeader.css';
 
 const AppHeader = () => {
+  const { darkMode, toggleDarkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
+
   const isLoggedIn = localStorage.getItem('loggedIn');
   const userStr = localStorage.getItem('loggedInUser');
   const user = userStr ? JSON.parse(userStr) : null;
   const username = user?.name || 'User';
 
-  const { darkMode } = useContext(ThemeContext);
-
-  // Logout handler
   const handleLogout = () => {
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('loggedInUser');
@@ -20,42 +19,47 @@ const AppHeader = () => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg ${darkMode ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} border-bottom`}>
-      <div className="container-fluid px-4">
+    <nav className={`navbar navbar-expand-lg px-4 py-3 shadow-sm ${darkMode ? 'bg-dark navbar-dark' : 'bg-light navbar-light'}`}>
+      <div className="container-fluid d-flex justify-content-between align-items-center">
 
-        {/* Left: Brand + Navigation */}
-        <div className="d-flex align-items-center">
-          <Link className="navbar-brand fw-bold brand-color me-4" to="/">
-            <span className="me-2">🎬</span>
-            E-Cube
+        {/* Left Section: Brand and Navigation */}
+        <div className="d-flex align-items-center gap-4">
+          <Link to="/" className={`navbar-brand fw-bold fs-4 ${darkMode ? 'text-light' : 'text-dark'}`}>
+            🎬 E-Cube
           </Link>
 
-          <div className="d-none d-md-flex">
-  <Link className={`nav-link me-3 ${darkMode ? 'text-light' : 'text-muted'}`} to="/">
-    Latest Movies
-  </Link>
-  <Link className={`nav-link me-3 ${darkMode ? 'text-light' : 'text-muted'}`} to="/upcoming">
-    Upcoming Movies
-  </Link>
-  <Link className={`nav-link me-3 ${darkMode ? 'text-light' : 'text-muted'}`} to="/event">
-    Events
-  </Link>
-</div>
-
+          <div className="d-flex gap-3">
+            <NavLink to="/" className={({ isActive }) => `nav-link fw-semibold ${isActive ? 'text-primary' : darkMode ? 'text-light' : 'text-dark'}`}>
+              Latest
+            </NavLink>
+            <NavLink to="/upcoming" className={({ isActive }) => `nav-link fw-semibold ${isActive ? 'text-primary' : darkMode ? 'text-light' : 'text-dark'}`}>
+              Upcoming
+            </NavLink>
+            <NavLink to="/event" className={({ isActive }) => `nav-link fw-semibold ${isActive ? 'text-primary' : darkMode ? 'text-light' : 'text-dark'}`}>
+              Events
+            </NavLink>
+          </div>
         </div>
 
-        {/* Right: User Info / Login */}
-        <div className="d-flex align-items-center">
-          <span className={`fw-bold me-3 ${darkMode ? 'text-light' : 'text-dark'}`}>
-            Movie Ticket
-          </span>
+        {/* Right Section: Toggle + Profile/Login */}
+        <div className="d-flex align-items-center gap-3">
 
+          {/* 🌗 Dark Mode Toggle */}
+          <button
+            onClick={toggleDarkMode}
+            className={`btn btn-sm ${darkMode ? 'btn-outline-light' : 'btn-outline-dark'}`}
+            title="Toggle Theme"
+          >
+            {darkMode ? '🌙' : '☀️'}
+          </button>
+
+          {/* 👤 Profile/Login */}
           {isLoggedIn ? (
             <div className="d-flex align-items-center">
               <Link
-  to={`/profile?name=${username}`}
-  className={`text-decoration-none me-3 fw-semibold ${darkMode ? 'text-info' : 'text-primary'}`}
->
+                to={`/profile?name=${username}`}
+                className={`text-decoration-none me-3 fw-semibold ${darkMode ? 'text-info' : 'text-primary'}`}
+              >
                 <i className="bi bi-person-circle me-1"></i>
                 {username}
               </Link>
@@ -66,15 +70,13 @@ const AppHeader = () => {
             </div>
           ) : (
             <div className="d-flex align-items-center">
-              <i className="bi bi-person-circle me-2"></i>
-              <span className={`me-3 ${darkMode ? 'text-light' : 'text-dark'}`}>{username}</span>
+              <i className="bi bi-person-circle me-2 fs-5"></i>
               <Link to="/login" className="btn btn-sm brand-btn">
                 Login
               </Link>
             </div>
           )}
         </div>
-
       </div>
     </nav>
   );

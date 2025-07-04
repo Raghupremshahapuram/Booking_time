@@ -26,7 +26,6 @@ const MovieDetails = () => {
   const handleBookNow = () => {
     const isLoggedIn = localStorage.getItem('loggedIn');
     if (!isLoggedIn) {
-      // Save movie name temporarily
       sessionStorage.setItem('moviename', movie.title);
       navigate('/login', { state: { from: `/book/${movie.id}` } });
     } else {
@@ -46,26 +45,29 @@ const MovieDetails = () => {
 
   return (
     <div className={`container my-5 ${darkMode ? 'bg-dark text-white' : 'bg-white text-dark'} rounded-4 shadow-lg p-4`}>
-      <div className="d-flex flex-column flex-md-row gap-4 align-items-start">
-        <img 
-          src={movie.imageUrl} 
-          alt={movie.name} 
-          className="img-fluid rounded-4 shadow-sm" 
-          style={{ maxWidth: '500px', height: 'auto', objectFit: 'cover' }}
-          onError={(e) => {
-            e.currentTarget.src = 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=400';
-          }}
-        />
+      <div className="row g-4 align-items-start">
+        {/* Image Column */}
+        <div className="col-12 col-md-6">
+          <img 
+            src={movie.imageUrl} 
+            alt={movie.name} 
+            className="img-fluid rounded-4 shadow-sm w-100 movie-image"
+            onError={(e) => {
+              e.currentTarget.src = 'https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=400';
+            }}
+          />
+        </div>
 
-        <div className="flex-grow-1">
-          <h2  className={`fw-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{movie.name}</h2>
+        {/* Content Column */}
+        <div className="col-12 col-md-6">
+          <h2 className={`fw-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{movie.name}</h2>
           <p className="text-muted fs-5">Experience the cinematic journey in this blockbuster film that combines storytelling, visuals, and memorable moments.</p>
 
           <div className="d-flex flex-wrap gap-3 mt-4">
-          <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
-            <span>{movie.rate || '8.5'}</span>
-             <i className="bi bi-star-fill text-warning"></i>
-                </div>
+            <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
+              <i className="bi bi-star-fill text-warning"></i>
+              <span>{movie.rate || '8.5'}</span>
+            </div>
             <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
               <i className="bi bi-calendar3"></i>
               <span>2024</span>
@@ -83,14 +85,9 @@ const MovieDetails = () => {
           </div>
 
           <div className="mt-5 d-flex gap-3 flex-wrap">
-
-          <button
-  className="btn btn-outline-primary px-4 py-2 rounded-3 shadow"
-  onClick={handleBookNow}
->
-  🎟️ Book Tickets
-</button>
-         
+            <button className="btn btn-outline-primary px-4 py-2 rounded-3 shadow" onClick={handleBookNow}>
+              🎟️ Book Tickets
+            </button>
             <button className="btn btn-link text-decoration-none" onClick={() => navigate(-1)}>
               ← Back to Movies
             </button>
