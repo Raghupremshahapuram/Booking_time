@@ -30,7 +30,7 @@ const MovieDetails = () => {
       sessionStorage.setItem('moviename', movie.title);
       navigate('/login', { state: { from: `/book/${movie.id}` } });
     } else {
-      navigate(`/book/${movie.id}`, { state: { movieName: movie.name } });
+      navigate(`/book/${movie.id}`, { state: { movieName: movie.name, image: movie.imageUrl } });
     }
   };
 
@@ -58,14 +58,14 @@ const MovieDetails = () => {
         />
 
         <div className="flex-grow-1">
-          <h2 className="fw-bold text-primary-emphasis mb-3">{movie.name}</h2>
+          <h2  className={`fw-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{movie.name}</h2>
           <p className="text-muted fs-5">Experience the cinematic journey in this blockbuster film that combines storytelling, visuals, and memorable moments.</p>
 
           <div className="d-flex flex-wrap gap-3 mt-4">
-            <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
-              <i className="bi bi-star-fill text-warning"></i>
-              <span>{movie.rate || '8.5'}</span>
-            </div>
+          <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
+            <span>{movie.rate || '8.5'}</span>
+             <i className="bi bi-star-fill text-warning"></i>
+                </div>
             <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
               <i className="bi bi-calendar3"></i>
               <span>2024</span>
@@ -78,8 +78,8 @@ const MovieDetails = () => {
 
           <div className="mt-4 d-flex gap-2 flex-wrap">
             <span className="badge bg-primary-subtle text-primary fw-semibold">{movie.language}</span>
-            <span className="badge bg-secondary-subtle text-secondary fw-semibold">Drama</span>
-            <span className="badge bg-info-subtle text-info fw-semibold">Action</span>
+            <span className="badge bg-secondary">Drama</span>
+            <span className="badge bg-info text-dark">Action</span>
           </div>
 
           <div className="mt-5 d-flex gap-3 flex-wrap">
@@ -90,12 +90,7 @@ const MovieDetails = () => {
 >
   🎟️ Book Tickets
 </button>
-          {/* <button 
-            className="btn btn-outline-primary px-4 py-2 rounded-3 shadow" 
-            onClick={handleBookNow}
-          >
-            🎟️ Book Tickets
-          </button> */}
+         
             <button className="btn btn-link text-decoration-none" onClick={() => navigate(-1)}>
               ← Back to Movies
             </button>

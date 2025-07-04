@@ -85,11 +85,7 @@ const Home = () => {
         className="container-fluid py-5 position-relative"
         style={{ zIndex: 10 }}
       >
-        {/* Header Section */}
-        <div className="text-center mb-5">
-          <h1 className="display-4 fw-bold mb-4">Latest Movies</h1>
-        </div>
-
+      
         {/* Filter Section */}
         <div className="row justify-content-center mb-5">
           <div className="col-auto">

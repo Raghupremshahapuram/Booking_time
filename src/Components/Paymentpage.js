@@ -13,8 +13,14 @@ const PaymentPage = () => {
   useEffect(() => {
     if (!booking) {
       navigate('/');
+      
     }
   }, [booking, navigate]);
+  const generateBookingId = () => {
+    return 'BK' + Math.random().toString(36).substring(2, 10).toUpperCase();
+  };
+  
+  const bookingId = generateBookingId();
 
   const handlePayment = () => {
     if (!booking) return;
@@ -24,6 +30,8 @@ const PaymentPage = () => {
       ...booking,
       created_at: new Date().toISOString(),
       name: JSON.parse(localStorage.getItem('loggedInUser'))?.name || 'Guest',
+      paymentMethod,
+      bookingId
     };
 
     axios.post('https://postgres-movie.onrender.com/bookings', bookingDetails)
@@ -38,55 +46,85 @@ const PaymentPage = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>💳 Payment for {booking?.movieName || booking?.eventName}</h2>
-      <p><strong>Date:</strong> {booking?.date}</p>
-      {booking?.time && <p><strong>Time:</strong> {booking.time}</p>}
-      {/* <p><strong>Seats:</strong> {booking?.seats?.join(', ')}</p> */}
-      <p><strong>Seats:</strong> {Array.isArray(booking.seats) ? booking.seats.join(', ') : booking.seats}</p>
+    <div className="container mt-5">
+      <div className="card shadow">
+        <div className="card-header bg-primary text-white">
+        <h5 className="mb-0">💳 Payment for <strong>{booking?.movie_name || booking?.event_name}</strong></h5>
 
+          <small>Confirm and complete your booking</small>
+        </div>
+        <div className="card-body">
+          <p><strong>Date:</strong> {booking?.date}</p>
+          {booking?.time && <p><strong>Time:</strong> {booking.time}</p>}
+          <p><strong>Seats:</strong> {Array.isArray(booking.seats) ? booking.seats.join(', ') : booking.seats}</p>
 
-      <div className="form-group mt-3">
-        <label>Select Payment Method:</label>
-        <div>
-          <label className="me-3">
+          <hr />
+
+          <h6 className="mb-3">Select Payment Method:</h6>
+          <div className="form-check">
             <input
+              className="form-check-input"
               type="radio"
               name="payment"
               value="card"
               checked={paymentMethod === 'card'}
               onChange={() => setPaymentMethod('card')}
-            />{' '}
-            Credit/Debit Card
-          </label>
-          <label className="me-3">
+              id="paymentCard"
+            />
+            <label className="form-check-label" htmlFor="paymentCard">
+              Credit/Debit Card
+            </label>
+          </div>
+          <div className="form-check">
             <input
+              className="form-check-input"
               type="radio"
               name="payment"
               value="upi"
               checked={paymentMethod === 'upi'}
               onChange={() => setPaymentMethod('upi')}
-            />{' '}
-            UPI
-          </label>
-          <label>
-            <input
-              type="radio"
-              name="payment"
-              value="netbanking"
-              checked={paymentMethod === 'netbanking'}
-              onChange={() => setPaymentMethod('netbanking')}
-            />{' '}
-            Net Banking
-          </label>
+              id="paymentUPI"
+            />
+            <label className="form-check-label" htmlFor="paymentUPI">
+              UPI
+            </label>
+          </div>
+          {paymentMethod === 'upi' && (
+  <div className="mt-4">
+    <label htmlFor="upiId" className="form-label fw-semibold">UPI ID</label>
+    <input
+      type="text"
+      id="upiId"
+      className="form-control"
+      placeholder="yourname@paytm / yourname@gpay"
+    />
+    <div className="form-text">
+      Enter your UPI ID (e.g., yourname@paytm, yourname@gpay, yourname@phonepe)
+    </div>
+
+    <div className="mt-3 text-muted small d-flex align-items-center">
+      <i className="bi bi-lock me-2"></i> Your payment information is secure and encrypted
+    </div>
+
+    
+  </div>
+)}
+
+<button
+      className="btn btn-success w-100 mt-3"
+      onClick={handlePayment}
+      disabled={processing}
+    >
+      <i className="bi bi-phone me-2"></i>
+      {processing ? 'Processing...' : `Complete Payment - ₹${booking?.price || '12.50'}`}
+    </button>
+
+          
         </div>
       </div>
-
-      <button className="btn btn-success mt-3" onClick={handlePayment} disabled={processing}>
-        {processing ? 'Processing...' : 'Pay & Confirm Booking'}
-      </button>
     </div>
   );
 };
 
 export default PaymentPage;
+

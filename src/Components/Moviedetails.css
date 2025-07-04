@@ -60,4 +60,40 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    
+    .badge {
+      background-color: #444;
+      color: #fff;
+    }
+    /* Override Bootstrap padding/margin on small screens */
+@media (max-width: 767px) {
+  .movie-detail-card {
+    padding: 1rem;
+    margin: 0 1rem;
+  }
+
+  .movie-full-image {
+    max-height: 300px;
+  }
+
+  .movie-button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .movie-info {
+    text-align: center;
+  }
+
+  .d-flex.flex-column.flex-md-row {
+    flex-direction: column !important;
+    align-items: center !important;
+  }
+}
+.dark-mode .text-muted {
+  color: #cccccc !important;
+}
+
+.dark-mode .badge {
+  background-color: #333 !important;
+  color: #fff;
+}

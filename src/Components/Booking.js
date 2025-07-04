@@ -86,23 +86,29 @@ const BookingPage = () => {
       alert('Please select date, time and seats before booking.');
       return;
     }
-
+  
     const userStr = localStorage.getItem('loggedInUser');
     const user = userStr ? JSON.parse(userStr) : null;
     if (!user) {
       alert('No logged-in user found. Please log in again.');
       return;
     }
-
+  
+    const baseTotal = selectedSeats.length * pricePerSeat;
+    const tax = selectedSeats.length > 0 ? pricePerSeat * 0.25 : 0;
+    const totalPrice = baseTotal + tax;
+  
     const bookingDetails = {
       userId: user.id,
       name: user.name,
       movie_name: movieName,
       date: selectedDate,
       time: selectedTime,
-      seats: selectedSeats
+      seats: selectedSeats,
+      price: totalPrice.toFixed(2), 
+      image: location.state?.image 
     };
-
+  
     navigate('/payment', { state: bookingDetails });
   };
 
