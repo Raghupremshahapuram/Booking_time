@@ -11,11 +11,24 @@ const showTimes = [
   { label: "10:00 PM", hour: 22 }
 ];
 
-const pricePerSeat = 120;
 const getTodayDate = () => new Date().toISOString().split('T')[0];
 const getCurrentHour = () => new Date().getHours();
 const isToday = (selectedDate) => new Date().toDateString() === new Date(selectedDate).toDateString();
-const seats = Array.from({ length: 60 }, (_, i) => `Seat ${i + 1}`);
+
+const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+const cols = Array.from({ length: 10 }, (_, i) => i + 1);
+const seatPrices = {
+  A: 200,
+  B: 180,
+  C: 160,
+  D: 140,
+  E: 120,
+  F: 100,
+  G: 100,
+  H: 100,
+  I: 100,
+  J: 100
+};
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -81,23 +94,30 @@ const BookingPage = () => {
     );
   };
 
+  const calculateTotal = () => {
+    const subtotal = selectedSeats.reduce((sum, seat) => {
+      const row = seat[0];
+      return sum + (seatPrices[row] || 0);
+    }, 0);
+    const tax = subtotal * 0.25;
+    return { subtotal, tax, total: subtotal + tax };
+  };
+
   const handleBooking = () => {
     if (!selectedTime || !selectedDate || selectedSeats.length === 0) {
       alert('Please select date, time and seats before booking.');
       return;
     }
-  
+
     const userStr = localStorage.getItem('loggedInUser');
     const user = userStr ? JSON.parse(userStr) : null;
     if (!user) {
       alert('No logged-in user found. Please log in again.');
       return;
     }
-  
-    const baseTotal = selectedSeats.length * pricePerSeat;
-    const tax = selectedSeats.length > 0 ? pricePerSeat * 0.25 : 0;
-    const totalPrice = baseTotal + tax;
-  
+
+    const { total } = calculateTotal();
+
     const bookingDetails = {
       userId: user.id,
       name: user.name,
@@ -105,143 +125,100 @@ const BookingPage = () => {
       date: selectedDate,
       time: selectedTime,
       seats: selectedSeats,
-      price: totalPrice.toFixed(2), 
-      image: location.state?.image 
+      price: total.toFixed(2),
+      image: location.state?.image
     };
-  
+
     navigate('/payment', { state: bookingDetails });
   };
 
   if (loading) return <h3>Loading movie info...</h3>;
   if (error) return <h3 style={{ color: 'red' }}>{error}</h3>;
 
+  const { subtotal, tax, total } = calculateTotal();
+
   return (
-    
     <div className="booking-container">
-      <div className="card border-0 rounded-4 shadow mb-4" style={{ background: 'linear-gradient(to right, #3b82f6, #8b5cf6)', color: '#fff' }}>
-  <div className="card-body p-4">
-    <div className="d-flex align-items-start gap-3">
-      <div className="bg-white bg-opacity-25 p-3 rounded">
-        <i className="bi bi-film fs-2"></i>
-      </div>
-      <div>
-        
-        <h3 className="fw-bold">Book Tickets for: {movieName || 'Loading...'}</h3>
-
-        <p className="mb-0">Select your preferred showtime and seats</p>
-      </div>
-    </div>
-
-    <div className="row mt-4">
-      <div className="col-md-6 mb-3">
-        <label className="fw-semibold">Select Show Date:</label>
-        <input
-          type="date"
-          className="form-control bg-transparent text-white border border-white"
-          value={selectedDate}
-          min={getTodayDate()}
-          onChange={(e) => {
-            setSelectedDate(e.target.value);
-            setSelectedTime('');
-          }}
-        />
-      </div>
-
-      <div className="col-md-6">
-        <label className="fw-semibold">Select Show Time:</label>
-        <div className="d-flex flex-wrap gap-2 mt-2">
-          {filteredTimes.map((show) => (
-            <button
-              key={show.label}
-              className={`btn btn-outline-light ${selectedTime === show.label ? 'bg-white text-primary fw-bold' : ''}`}
-              onClick={() => setSelectedTime(show.label)}
-            >
-              <i className="bi bi-clock me-1"></i>
-              {show.label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-     
-
-      <div className="form-group">
-        <div className="text-center fw-bold py-2">SCREEN</div>
-        <div className="seat-grid">
-          {seats.map(seat => (
-            <label key={seat} className={`seat ${bookedSeats.includes(seat) ? 'booked' : ''}`}>
+      <div className="card">
+        <div className="card-body">
+          <h3 className="fw-bold mb-3">Book Tickets for: {movieName}</h3>
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <label className="fw-semibold">Select Show Date:</label>
               <input
-                type="checkbox"
-                value={seat}
-                onChange={() => handleSeatChange(seat)}
-                checked={selectedSeats.includes(seat)}
-                disabled={bookedSeats.includes(seat)}
+                type="date"
+                className="form-control"
+                value={selectedDate}
+                min={getTodayDate()}
+                onChange={(e) => {
+                  setSelectedDate(e.target.value);
+                  setSelectedTime('');
+                }}
               />
-              <span className="seat-label">{seat.split(' ')[1]}</span>
-            </label>
-          ))}
+            </div>
+            <div className="col-md-6">
+              <label className="fw-semibold">Select Show Time:</label>
+              <div className="d-flex flex-wrap gap-2 mt-2">
+                {filteredTimes.map((show) => (
+                  <button
+                    key={show.label}
+                    className={`btn btn-outline-light ${selectedTime === show.label ? 'bg-white text-primary fw-bold' : ''}`}
+                    onClick={() => setSelectedTime(show.label)}
+                  >
+                    {show.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="mt-4 d-flex justify-content-center gap-4 align-items-center">
-        <div className="d-flex align-items-center gap-2">
-          <span className="rounded" style={{ width: '18px', height: '18px', backgroundColor: '#f0f0f0', display: 'inline-block' }}></span>
-          <span className="text-muted">Available</span>
-        </div>
-        <div className="d-flex align-items-center gap-2">
-          <span className="rounded" style={{ width: '18px', height: '18px', background: 'linear-gradient(to right, #6366F1, #8B5CF6)', display: 'inline-block' }}></span>
-          <span className="text-muted">Selected</span>
-        </div>
-        <div className="d-flex align-items-center gap-2">
-          <span className="rounded" style={{ width: '18px', height: '18px', backgroundColor: '#fecaca', display: 'inline-block' }}></span>
-          <span className="text-muted">Occupied</span>
-        </div>
+      <div className="screen-label">SCREEN</div>
+      <div className="seat-grid">
+        {rows.map(row => (
+          cols.map(col => {
+            const seat = `${row}${col}`;
+            return (
+              <label key={seat} className={`seat ${bookedSeats.includes(seat) ? 'booked' : selectedSeats.includes(seat) ? 'selected' : ''}`}>
+                <input
+                  type="checkbox"
+                  value={seat}
+                  onChange={() => handleSeatChange(seat)}
+                  checked={selectedSeats.includes(seat)}
+                  disabled={bookedSeats.includes(seat)}
+                />
+                <span className="seat-label">{seat}</span>
+              </label>
+            );
+          })
+        ))}
       </div>
 
-      <div className="card border-0 shadow rounded-4 mt-4">
-  <div className="card-body p-4">
-    <div className="d-flex justify-content-between align-items-center mb-3">
-      <h5 className="fw-bold mb-0">Booking Summary</h5>
-      <span className="text-muted">
-        <i className="bi bi-people me-1"></i>
-        {selectedSeats.length} {selectedSeats.length === 1 ? 'seat' : 'seats'}
-      </span>
-    </div>
-    <p className="text-muted">Price per seat:</p>
-    <h6 className="text-end">₹{pricePerSeat}</h6>
-    <hr />
-    <div className="d-flex justify-content-between align-items-center">
-      <span>Subtotal:</span>
-      <span>₹{selectedSeats.length * pricePerSeat}</span>
-    </div>
-    <div className="d-flex justify-content-between align-items-center">
-    <span>Tax :</span>
-<span>₹{(selectedSeats.length > 0 ? (pricePerSeat * 0.25).toFixed(2) : '0.00')}</span>
+      <div className="legend">
+        <div><span className="available"></span> Available</div>
+        <div><span className="selected"></span> Selected</div>
+        <div><span className="occupied"></span> Occupied</div>
+      </div>
 
-    </div>
-    <hr />
-    <div className="d-flex justify-content-between align-items-center">
-      <strong>Total:</strong>
-      <strong className="text-primary">
-  ₹{(selectedSeats.length * pricePerSeat + (selectedSeats.length > 0 ? pricePerSeat * 0.25 : 0)).toFixed(2)}
-</strong>
-
-    </div>
-
-    <button
-      className="btn btn-primary w-100 mt-4 py-2"
-      disabled={selectedSeats.length === 0 || !selectedTime}
-      onClick={handleBooking}
-    >
-      <i className="bi bi-credit-card me-2"></i>
-      Proceed to Payment
-    </button>
-  </div>
-</div>
-
-
+      <div className="booking-summary">
+        <h5>Booking Summary</h5>
+        <p className="text-muted">Price per seat based on row (A: ₹200 → J: ₹100)</p>
+        <div className="d-flex justify-content-between">
+          <span>Subtotal:</span>
+          <span>₹{subtotal}</span>
+        </div>
+        <div className="d-flex justify-content-between">
+          <span>Tax (25%):</span>
+          <span>₹{tax.toFixed(2)}</span>
+        </div>
+        <hr />
+        <div className="d-flex justify-content-between total">
+          <span>Total:</span>
+          <span>₹{total.toFixed(2)}</span>
+        </div>
+        <button onClick={handleBooking} disabled={selectedSeats.length === 0 || !selectedTime}>Proceed to Payment</button>
+      </div>
     </div>
   );
 };
