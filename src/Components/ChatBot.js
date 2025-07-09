@@ -14,23 +14,36 @@ const ChatBot = ({ onBookingDetails, latestMovies }) => {
     const response = parsePrompt(prompt);
     setMessages(prev => [...prev, response.message]);
 
-    if (response.bookingIntent && typeof onBookingDetails === 'function') {
-      onBookingDetails(response.bookingIntent);
+    if (response.bookingIntent) {
+      onBookingDetails(response.bookingIntent); // Trigger parent with booking intent
     }
 
     setPrompt('');
   };
 
   const parsePrompt = (text) => {
-    const movieMatch = /(?:for|movie)\s(.+?)(?:\s(?:at|@)|\sfor|\stoday|\stomorrow|$)/i.exec(text);
-    const movieName = movieMatch?.[1]?.trim() || '';
-    const matchedMovie = latestMovies.find(m => m.name.toLowerCase().includes(movieName.toLowerCase()));
+    const lowerText = text.toLowerCase();
 
-    const timeMatch = /(?:at|@)?\s?(\d{1,2})(:\d{2})?\s?(AM|PM)/i.exec(text);
-    const time = timeMatch ? `${timeMatch[1]}${timeMatch[2] || ':00'} ${timeMatch[3]}` : null;
+    // Match movie by name (partial or exact match)
+    const matchedMovie = latestMovies.find(m =>
+      lowerText.includes(m.name.toLowerCase())
+    );
 
+    // Match time
+    const timeMatch = /(?:at|for)?\s?(\d{1,2})(:\d{2})?\s?(am|pm)?/i.exec(text);
+    const time = timeMatch
+      ? `${timeMatch[1]}${timeMatch[2] || ':00'} ${timeMatch[3]?.toUpperCase() || 'PM'}`
+      : null;
+
+    // Match date
     let date = new Date();
-    if (/tomorrow/i.test(text)) date.setDate(date.getDate() + 1);
+    const dateMatch = /on\s(\d{1,2})\s(january|february|march|april|may|june|july|august|september|october|november|december)/i.exec(text);
+    if (dateMatch) {
+      const [ day, monthName] = dateMatch;
+      date = new Date(`${monthName} ${day}, ${new Date().getFullYear()}`);
+    } else if (/tomorrow/i.test(text)) {
+      date.setDate(date.getDate() + 1);
+    }
     const finalDate = date.toISOString().split('T')[0];
 
     const replyText = matchedMovie

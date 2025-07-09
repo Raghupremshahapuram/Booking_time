@@ -1,12 +1,11 @@
 /* Booking.css */
 
-/* Theme Variables */
 :root {
   --bg-color: #ffffff;
   --text-color: #000000;
   --card-bg: #f8f9fa;
   --seat-available-bg: #f0f0f0;
-  --seat-selected-bg: linear-gradient(to right, #6366F1, #8B5CF6);
+  --seat-selected-bg: #6366f1;
   --seat-booked-bg: #fecaca;
   --input-border: #ced4da;
 }
@@ -16,7 +15,7 @@
   --text-color: #ffffff;
   --card-bg: #1e1e2f;
   --seat-available-bg: #444;
-  --seat-selected-bg: linear-gradient(to right, #6366F1, #8B5CF6);
+  --seat-selected-bg: #6366f1;
   --seat-booked-bg: #d97777;
   --input-border: #444;
 }
@@ -25,63 +24,71 @@
   background-color: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
-  padding: 1rem;
-  transition: all 0.3s ease;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
 }
 
-.card {
+.booking-card {
   background-color: var(--card-bg);
-  color: var(--text-color);
+  padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1.5rem;
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
 }
 
-.card-body {
-  padding: 1.5rem;
+.booking-card h2 {
+  color: #be123c;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 
-input[type="date"] {
-  background: transparent;
-  color: var(--text-color);
-  border: 1px solid var(--input-border);
-}
-
-input[type="date"]:focus {
-  outline: none;
-  border-color: #6366F1;
-  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+.date-time-select {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 .screen-label {
-  text-align: center;
+  background-color: #1f2937;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   font-weight: bold;
-  padding: 0.5rem 0;
-  background-color: var(--seat-booked-bg);
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
 }
 
 .seat-grid {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
   gap: 0.5rem;
   justify-items: center;
-  padding-bottom: 1rem;
+  width: 100%;
+  max-width: 550px;
 }
 
 .seat {
   position: relative;
+  width: 36px;
+  height: 36px;
+  background-color: var(--seat-available-bg);
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: var(--seat-available-bg);
-  border-radius: 0.5rem;
-  transition: background 0.3s;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 500;
+  user-select: none;
+  transition: all 0.2s ease-in-out;
 }
 
 .seat input {
@@ -91,9 +98,8 @@ input[type="date"]:focus {
 }
 
 .seat.selected {
-  background: var(--seat-selected-bg);
-  color: #fff;
-  font-weight: bold;
+  background-color: var(--seat-selected-bg);
+  color: white;
 }
 
 .seat.booked {
@@ -102,15 +108,11 @@ input[type="date"]:focus {
   opacity: 0.7;
 }
 
-.seat-label {
-  z-index: 1;
-}
-
 .legend {
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  padding: 1rem 0;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
 .legend div {
@@ -121,36 +123,30 @@ input[type="date"]:focus {
 }
 
 .legend span {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   display: inline-block;
   border-radius: 4px;
 }
 
-.available {
-  background-color: var(--seat-available-bg);
-}
-
-.selected {
-  background: var(--seat-selected-bg);
-}
-
-.occupied {
-  background-color: var(--seat-booked-bg);
-}
+.available { background-color: var(--seat-available-bg); }
+.selected { background-color: var(--seat-selected-bg); }
+.occupied { background-color: var(--seat-booked-bg); }
 
 .booking-summary {
   background-color: var(--card-bg);
-  color: var(--text-color);
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 1rem;
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  max-width: 600px;
-  margin: 2rem auto;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 2rem;
+  color: var(--text-color);
 }
 
-.booking-summary h5 {
+.booking-summary h4 {
   font-weight: bold;
+  color: #be123c;
   margin-bottom: 1rem;
 }
 
@@ -158,21 +154,27 @@ input[type="date"]:focus {
   font-size: 1.25rem;
   font-weight: bold;
   color: #3b82f6;
+  margin-top: 1rem;
 }
 
 .booking-summary button {
-  margin-top: 1rem;
   width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
   background-color: #3b82f6;
   color: white;
   border: none;
-  padding: 0.75rem;
   border-radius: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
 }
 
-.booking-summary button:hover {
+.booking-summary button:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.booking-summary button:hover:not(:disabled) {
   background-color: #2563eb;
 }
