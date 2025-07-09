@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Booking.css';
@@ -18,16 +18,8 @@ const isToday = (selectedDate) => new Date().toDateString() === new Date(selecte
 const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
 const cols = Array.from({ length: 10 }, (_, i) => i + 1);
 const seatPrices = {
-  A: 200,
-  B: 180,
-  C: 160,
-  D: 140,
-  E: 120,
-  F: 100,
-  G: 100,
-  H: 100,
-  I: 100,
-  J: 100
+  A: 200, B: 180, C: 160, D: 140, E: 120,
+  F: 100, G: 100, H: 100, I: 100, J: 100
 };
 
 const BookingPage = () => {
@@ -35,13 +27,21 @@ const BookingPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [movieName, setMovieName] = useState(location.state?.movieName || sessionStorage.getItem('movieName') || '');
-
   const [loading, setLoading] = useState(!movieName);
   const [error, setError] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [selectedDate, setSelectedDate] = useState(getTodayDate());
+  const [selectedTime, setSelectedTime] = useState(location.state?.selectedTime || '');
+  const [selectedDate, setSelectedDate] = useState(location.state?.selectedDate || getTodayDate());
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [bookedSeats, setBookedSeats] = useState([]);
+
+  const calculateTotal = useCallback(() => {
+    const subtotal = selectedSeats.reduce((sum, seat) => {
+      const row = seat[0];
+      return sum + (seatPrices[row] || 0);
+    }, 0);
+    const tax = subtotal * 0.25;
+    return { subtotal, tax, total: subtotal + tax };
+  }, [selectedSeats]);
 
   const filteredTimes = showTimes.filter(show => {
     if (isToday(selectedDate)) {
@@ -87,34 +87,14 @@ const BookingPage = () => {
     }
   }, [movieName, selectedDate, selectedTime]);
 
-  const handleSeatChange = (seat) => {
-    if (bookedSeats.includes(seat)) return;
-    setSelectedSeats(prev =>
-      prev.includes(seat) ? prev.filter(s => s !== seat) : [...prev, seat]
-    );
-  };
-
-  const calculateTotal = () => {
-    const subtotal = selectedSeats.reduce((sum, seat) => {
-      const row = seat[0];
-      return sum + (seatPrices[row] || 0);
-    }, 0);
-    const tax = subtotal * 0.25;
-    return { subtotal, tax, total: subtotal + tax };
-  };
-
-  const handleBooking = () => {
+  const handleBooking = useCallback(() => {
     if (!selectedTime || !selectedDate || selectedSeats.length === 0) {
-      alert('Please select date, time and seats before booking.');
-      return;
+      return alert("Please select date, time, and at least one seat.");
     }
 
     const userStr = localStorage.getItem('loggedInUser');
     const user = userStr ? JSON.parse(userStr) : null;
-    if (!user) {
-      alert('No logged-in user found. Please log in again.');
-      return;
-    }
+    if (!user) return alert('No logged-in user found. Please log in again.');
 
     const { total } = calculateTotal();
 
@@ -130,6 +110,13 @@ const BookingPage = () => {
     };
 
     navigate('/payment', { state: bookingDetails });
+  }, [selectedTime, selectedDate, selectedSeats, movieName, location.state, navigate, calculateTotal]);
+
+  const handleSeatChange = (seat) => {
+    if (bookedSeats.includes(seat)) return;
+    setSelectedSeats(prev =>
+      prev.includes(seat) ? prev.filter(s => s !== seat) : [...prev, seat]
+    );
   };
 
   if (loading) return <h3>Loading movie info...</h3>;
@@ -217,7 +204,12 @@ const BookingPage = () => {
           <span>Total:</span>
           <span>₹{total.toFixed(2)}</span>
         </div>
-        <button onClick={handleBooking} disabled={selectedSeats.length === 0 || !selectedTime}>Proceed to Payment</button>
+        <button
+          onClick={handleBooking}
+          disabled={selectedSeats.length === 0 || !selectedTime || !selectedDate}
+        >
+          Proceed to Payment
+        </button>
       </div>
     </div>
   );

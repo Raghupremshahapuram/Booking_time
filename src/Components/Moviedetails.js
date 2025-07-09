@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { ThemeContext } from '../context/ThemeContext';
 import './Moviedetails.css';
@@ -7,6 +7,7 @@ import './Moviedetails.css';
 const MovieDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
   const { darkMode } = useContext(ThemeContext);
@@ -25,11 +26,21 @@ const MovieDetails = () => {
 
   const handleBookNow = () => {
     const isLoggedIn = localStorage.getItem('loggedIn');
+    const chatbotData = location.state;
+
     if (!isLoggedIn) {
-      sessionStorage.setItem('moviename', movie.title);
+      sessionStorage.setItem('moviename', movie.name);
       navigate('/login', { state: { from: `/book/${movie.id}` } });
     } else {
-      navigate(`/book/${movie.id}`, { state: { movieName: movie.name, image: movie.imageUrl } });
+      navigate(`/book/${movie.id}`, {
+        state: {
+          movieName: movie.name,
+          image: movie.imageUrl,
+          selectedDate: chatbotData?.selectedDate || null,
+          selectedTime: chatbotData?.selectedTime || null,
+          fromChatbot: chatbotData?.fromChatbot || false
+        }
+      });
     }
   };
 
@@ -61,7 +72,9 @@ const MovieDetails = () => {
         {/* Content Column */}
         <div className="col-12 col-md-6">
           <h2 className={`fw-bold ${darkMode ? 'text-white' : 'text-dark'}`}>{movie.name}</h2>
-          <p className="text-muted fs-5">Experience the cinematic journey in this blockbuster film that combines storytelling, visuals, and memorable moments.</p>
+          <p className="text-muted fs-5">
+            Experience the cinematic journey in this blockbuster film that combines storytelling, visuals, and memorable moments.
+          </p>
 
           <div className="d-flex flex-wrap gap-3 mt-4">
             <div className="d-flex align-items-center gap-2 bg-light rounded-pill px-3 py-2 shadow-sm">
@@ -83,6 +96,12 @@ const MovieDetails = () => {
             <span className="badge bg-secondary">Drama</span>
             <span className="badge bg-info text-dark">Action</span>
           </div>
+
+          {(location.state?.fromChatbot || location.state?.selectedDate) && (
+            <div className="alert alert-info mt-4">
+              Smart Assistant pre-filled your showtime. Click "Book Tickets" to continue.
+            </div>
+          )}
 
           <div className="mt-5 d-flex gap-3 flex-wrap">
             <button className="btn btn-outline-primary px-4 py-2 rounded-3 shadow" onClick={handleBookNow}>

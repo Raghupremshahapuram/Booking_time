@@ -1,108 +1,152 @@
+/* Booking.css */
+
+/* Theme Variables */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --card-bg: #f8f9fa;
+  --seat-available-bg: #f0f0f0;
+  --seat-selected-bg: linear-gradient(to right, #6366F1, #8B5CF6);
+  --seat-booked-bg: #fecaca;
+  --input-border: #ced4da;
+}
+
+[data-theme='dark'] {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --card-bg: #1e1e2f;
+  --seat-available-bg: #444;
+  --seat-selected-bg: linear-gradient(to right, #6366F1, #8B5CF6);
+  --seat-booked-bg: #d97777;
+  --input-border: #444;
+}
+
 .booking-container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1.5rem;
-  border-radius: 16px;
-  background-color: #f9fafb;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  padding: 1rem;
+  transition: all 0.3s ease;
 }
 
 .card {
-  background: linear-gradient(to right, #3b82f6, #8b5cf6);
-  color: white;
-  border-radius: 20px;
-  padding: 1.5rem;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 1rem;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
 }
 
 .card-body {
   padding: 1.5rem;
 }
 
+input[type="date"] {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+}
+
+input[type="date"]:focus {
+  outline: none;
+  border-color: #6366F1;
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+
 .screen-label {
-  font-weight: bold;
   text-align: center;
+  font-weight: bold;
   padding: 0.5rem 0;
-  color: #111827;
+  background-color: var(--seat-booked-bg);
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 .seat-grid {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  gap: 12px;
-  justify-content: center;
-  margin-top: 1rem;
-  padding: 0 2rem;
+  gap: 0.5rem;
+  justify-items: center;
+  padding-bottom: 1rem;
 }
 
 .seat {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  padding: 8px;
-  font-weight: 500;
-  color: #1f2937;
-  transition: all 0.2s ease-in-out;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background-color: var(--seat-available-bg);
+  border-radius: 0.5rem;
+  transition: background 0.3s;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
 }
 
 .seat input {
-  display: none;
-}
-
-.seat-label {
-  font-size: 0.875rem;
-}
-
-.seat:hover {
-  background-color: #dbeafe;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .seat.selected {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
-  color: white;
+  background: var(--seat-selected-bg);
+  color: #fff;
+  font-weight: bold;
 }
 
 .seat.booked {
-  background-color: #fecaca;
+  background-color: var(--seat-booked-bg);
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.7;
+}
+
+.seat-label {
+  z-index: 1;
 }
 
 .legend {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.legend div {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 14px;
 }
 
 .legend span {
-  display: inline-block;
   width: 18px;
   height: 18px;
+  display: inline-block;
   border-radius: 4px;
 }
 
-.legend .available {
-  background-color: #f3f4f6;
+.available {
+  background-color: var(--seat-available-bg);
 }
 
-.legend .selected {
-  background: linear-gradient(to right, #6366f1, #8b5cf6);
+.selected {
+  background: var(--seat-selected-bg);
 }
 
-.legend .occupied {
-  background-color: #fecaca;
+.occupied {
+  background-color: var(--seat-booked-bg);
 }
 
 .booking-summary {
-  margin-top: 2rem;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   padding: 1.5rem;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  max-width: 600px;
+  margin: 2rem auto;
 }
 
 .booking-summary h5 {
@@ -110,27 +154,23 @@
   margin-bottom: 1rem;
 }
 
-.booking-summary .text-muted {
-  font-size: 0.875rem;
-}
-
 .booking-summary .total {
   font-size: 1.25rem;
   font-weight: bold;
   color: #3b82f6;
-  text-align: right;
 }
 
 .booking-summary button {
   margin-top: 1rem;
-  padding: 0.75rem;
-  font-weight: 600;
-  font-size: 1rem;
+  width: 100%;
   background-color: #3b82f6;
   color: white;
   border: none;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
 }
 
 .booking-summary button:hover {

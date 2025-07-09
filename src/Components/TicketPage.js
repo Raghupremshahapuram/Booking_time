@@ -19,26 +19,22 @@ const TicketPage = () => {
     bookingId = 'N/A',
     price = 0,
     image = 'https://via.placeholder.com/200x250?text=No+Image',
-    paymentMethod,
+    paymentMethod = 'N/A',
     created_at,
   } = bookingData;
 
-  const seatsArray = Array.isArray(seats) ? seats : seats.split(',');
+  const seatsArray = Array.isArray(seats) ? seats : seats?.split(',') || [];
   const seatCount = seatsArray.length;
-  const pricePerSeat = 120;
-  const subtotal = seatCount * pricePerSeat;
-  const tax = parseFloat((subtotal * 0.25).toFixed(2));
-  const total = subtotal + tax;
 
   const generateQRString = () => {
-    return `E-Cube Ticket 🎫
+    return `🎫 E-Cube Ticket
 Movie: ${movie_name}
 Date: ${new Date(date).toLocaleDateString()}
 Time: ${time}
 Seats: ${seatsArray.join(', ')}
-Booked By: ${name}
+Name: ${name}
 Booking ID: ${bookingId}
-Price: ₹${price}
+Paid: ₹${price}
 Thank you for booking with E-Cube!`;
   };
 
@@ -53,17 +49,16 @@ Thank you for booking with E-Cube!`;
         <div className="ticket-header text-white px-4 py-3 d-flex justify-content-between align-items-center">
           <div>
             <h4 className="mb-1"><i className="bi bi-ticket-perforated-fill me-2"></i>Cinema Ticket</h4>
-            <small>Booking ID: <strong>{bookingData.bookingId}</strong></small>
+            <small>Booking ID: <strong>{bookingId}</strong></small>
           </div>
           <div className="text-end">
             <p className="mb-0 fw-bold">Total Paid</p>
-            <h4 className="mb-0">₹{total.toFixed(2)}</h4>
+            <h4 className="mb-0">₹{price}</h4>
           </div>
         </div>
 
         {/* Body */}
         <div className="row g-0">
-          {/* Left: Ticket Info */}
           <div className="col-md-8 p-4">
             <h3 className="fw-bold">{movie_name}</h3>
             <p className="text-muted">Cinema Hall A</p>
@@ -110,10 +105,10 @@ Thank you for booking with E-Cube!`;
             </div>
           </div>
 
-          {/* Right: QR + Poster */}
+          {/* QR + Poster */}
           <div className="col-md-4 d-flex flex-column justify-content-center align-items-center bg-light border-start p-4">
             <QRCodeCanvas value={generateQRString()} size={140} className="bg-white p-2 rounded shadow-sm mb-3" />
-            <p className="text-center small text-muted mb-2">Scan QR Code<br />Show this at the cinema</p>
+            <p className="text-center small text-muted mb-2">Scan this QR at the entrance</p>
             <img
               src={image}
               alt="Poster"
@@ -130,8 +125,8 @@ Thank you for booking with E-Cube!`;
         <div className="card-footer d-flex justify-content-between align-items-center no-print">
           <div>
             <small className="text-muted">
-              🎬 Please arrive 15 minutes early<br />
-              📄 Present this ticket and a valid ID at the entrance
+              🎬 Arrive 15 minutes early<br />
+              📄 Show this ticket and a valid ID at entry
             </small>
           </div>
           <div className="d-flex gap-2">
@@ -149,4 +144,3 @@ Thank you for booking with E-Cube!`;
 };
 
 export default TicketPage;
-
