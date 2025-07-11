@@ -20,7 +20,7 @@ const Home = () => {
     const fetchMovies = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("https://movie-api-b9qw.onrender.com/latest");
+        const response = await axios.get("https://postgres-movie.onrender.com/latest-movies");
         dispatch(fetchMovieSucess(response.data));
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));

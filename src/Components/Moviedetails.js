@@ -13,7 +13,7 @@ const MovieDetails = () => {
   const { darkMode } = useContext(ThemeContext);
 
   useEffect(() => {
-    axios.get("https://movie-api-b9qw.onrender.com/latest")
+    axios.get("https://postgres-movie.onrender.com/latest-movies")
       .then(res => {
         const found = res.data.find((m) => String(m.id) === String(id));
         setMovie(found);

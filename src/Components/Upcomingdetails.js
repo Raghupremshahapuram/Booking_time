@@ -10,7 +10,7 @@ const UpcomingDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("https://movie-api-b9qw.onrender.com/upcomingMovies")
+    axios.get("https://postgres-movie.onrender.com/upcoming-movies")
       .then(res => {
         const found = res.data.find((movie) => movie.id === id);
         setMovie(found);
@@ -32,9 +32,9 @@ const UpcomingDetails = () => {
         <img src={movie.imageUrl} className="upcoming.movie-poster" alt={movie.name} />
         <div className="upcoming.card-body">
           <h5 className="upcoming.card-title">{movie.name}</h5>
-          <p><strong>Type:</strong> {movie.type}</p>
+          <p><strong>Type:</strong> {movie.description}</p>
           <p><strong>Language:</strong> {movie.language}</p>
-          <p><strong>Rating:</strong> {movie.rate}</p>
+          <p><strong>Trailer:</strong> {movie.trailer_url}</p>
           <button onClick={() => navigate(-1)} className="btn btn-secondary">Back</button>
         </div>
       </div>

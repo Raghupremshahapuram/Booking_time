@@ -26,7 +26,7 @@ const EventBookingPage = () => {
   };
 
   useEffect(() => {
-    axios.get(`https://movie-api-b9qw.onrender.com/events`)
+    axios.get(`https://postgres-movie.onrender.com/events`)
       .then(res => {
         const event = res.data.find(e => String(e.id) === String(id));
         if (event) {

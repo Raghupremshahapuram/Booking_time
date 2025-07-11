@@ -5,11 +5,11 @@ import { QRCodeCanvas } from "qrcode.react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import "./Profile.css";
+
 const Profile = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const name = queryParams.get("name");
-  
 
   const [bookings, setBookings] = useState([]);
   const [showUpcoming, setShowUpcoming] = useState(true);
@@ -33,28 +33,31 @@ const Profile = () => {
     if (modifier === "AM" && hours === 12) hours = 0;
     return { hours, minutes };
   };
-
   const filteredBookings = bookings.filter((booking) => {
+    if (booking.status === "cancelled") return !showUpcoming;
     const date = new Date(booking.date);
     const now = new Date();
-    const timeString = booking.time || booking.eventTime || "";
-    const { hours, minutes } = convertTo24Hour(timeString);
-
+    const { hours, minutes } = convertTo24Hour(booking.time || "");
     date.setHours(hours);
     date.setMinutes(minutes);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-
     return showUpcoming ? date >= now : date < now;
   });
 
   const cancelBooking = (id) => {
+    const reason = prompt("Why are you cancelling this ticket?");
+    if (!reason) return;
+
     axios
-      .delete(`https://postgres-movie.onrender.com/bookings/${id}`)
-      .then(() => {
-        setBookings((prev) => prev.filter((b) => b.id !== id));
+      .post("https://postgres-movie.onrender.com/cancelled-bookings", {
+        booking_id: id,
+        reason,
       })
-      .catch((err) => console.error("Error deleting booking:", err));
+      .then(() => {
+        setBookings((prev) =>
+          prev.map((b) => (b.id === id ? { ...b, status: "cancelled" } : b))
+        );
+      })
+      .catch((err) => console.error("❌ Cancellation error:", err));
   };
 
   const downloadPDF = async (id) => {
@@ -79,10 +82,10 @@ const Profile = () => {
   };
 
   return (
-    <div>
-      
+    <div className="container py-4">
+      <h2 className="mb-4">🎟️ Your Bookings</h2>
 
-      <div className="mt-3 mb-4">
+      <div className="mb-4">
         <button
           className={`btn me-2 ${showUpcoming ? "btn-primary" : "btn-outline-primary"}`}
           onClick={() => setShowUpcoming(true)}
@@ -93,21 +96,21 @@ const Profile = () => {
           className={`btn ${!showUpcoming ? "btn-primary" : "btn-outline-primary"}`}
           onClick={() => setShowUpcoming(false)}
         >
-          Previous
+          Previous / Cancelled
         </button>
       </div>
 
       {filteredBookings.length === 0 ? (
-        <p>No {showUpcoming ? "upcoming" : "previous"} bookings found.</p>
+        <p>No {showUpcoming ? "upcoming" : "previous or cancelled"} bookings found.</p>
       ) : (
         <div className="row">
           {filteredBookings.map((booking) => (
             <div
               key={booking.id}
-              className="col-md-6 mb-3"
+              className="col-md-6 mb-4"
               ref={(el) => (bookingRefs.current[booking.id] = el)}
             >
-              <div className="card h-100">
+              <div className="card h-100 shadow">
                 <div className="card-body">
                   <h5>
                     🎬 {booking.movie_name
@@ -119,6 +122,10 @@ const Profile = () => {
                   <p>📅 Date: {new Date(booking.date).toLocaleDateString()}</p>
                   <p>⏰ Time: {booking.time || "Not specified"}</p>
                   <p>💺 Seats: {Array.isArray(booking.seats) ? booking.seats.join(", ") : booking.seats}</p>
+
+                  {booking.status === 'cancelled' && (
+                    <span className="badge bg-danger">❌ Cancelled</span>
+                  )}
 
                   <div className="mt-2">
                     <p className="mb-1">🎫 Booking QR:</p>
@@ -144,7 +151,7 @@ const Profile = () => {
                     {copiedId === booking.id && (
                       <span className="text-success">Link copied!</span>
                     )}
-                    {showUpcoming && (
+                    {showUpcoming && booking.status !== 'cancelled' && (
                       <button
                         className="btn btn-sm btn-danger"
                         onClick={() => cancelBooking(booking.id)}

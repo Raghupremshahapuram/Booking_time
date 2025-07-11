@@ -10,7 +10,7 @@ const EventDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`https://movie-api-b9qw.onrender.com/events`)
+    axios.get(`https://postgres-movie.onrender.com/events`)
       .then(res => {
         const found = res.data.find(e => e.id === id);
         setEvent(found);

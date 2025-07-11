@@ -1,13 +1,11 @@
-/* Booking.css */
-
 :root {
-  --bg-color: #ffffff;
-  --text-color: #000000;
-  --card-bg: #f8f9fa;
-  --seat-available-bg: #f0f0f0;
+  --bg-color: #f9fafb;
+  --text-color: #111827;
+  --card-bg: #ffffff;
+  --seat-available-bg: #f3f4f6;
   --seat-selected-bg: #6366f1;
   --seat-booked-bg: #fecaca;
-  --input-border: #ced4da;
+  --input-border: #d1d5db;
 }
 
 [data-theme='dark'] {
@@ -23,103 +21,146 @@
 .booking-container {
   background-color: var(--bg-color);
   color: var(--text-color);
+  padding: 1rem;
   min-height: 100vh;
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2rem;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
 }
 
-.booking-card {
-  background-color: var(--card-bg);
-  padding: 2rem;
+.booking-header {
+  background: linear-gradient(to right, #6366f1, #8b5cf6);
+  color: white;
+  padding: 1.5rem;
   border-radius: 1rem;
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  width: 100%;
-  max-width: 600px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.booking-card h2 {
-  color: #be123c;
+.booking-header h2 {
+  color: #ffffff; 
+  font-size: 1.25rem;
   font-weight: bold;
-  margin-bottom: 1rem;
 }
 
-.date-time-select {
+.booking-header h2 span {
+  color: #ffffff; 
+}
+
+.selectors {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-top: 1rem;
 }
 
-.screen-label {
+.selectors label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.selectors input,
+.selectors button {
+  margin-top: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.selectors input {
+  background: white;
+}
+
+.show-times {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.show-times button {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 500;
+}
+
+.show-times .active {
+  background: #3b82f6;
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.screen {
+  text-align: center;
+  font-weight: bold;
+  padding: 0.75rem;
   background-color: #1f2937;
   color: white;
-  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  font-weight: bold;
-  text-align: center;
-  width: 100%;
+  margin-bottom: 1.5rem;
   max-width: 400px;
+  margin-inline: auto;
 }
 
 .seat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(36px, 1fr));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
-  justify-items: center;
-  width: 100%;
-  max-width: 550px;
+  padding: 1rem 0;
+}
+
+.seat-row {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .seat {
   position: relative;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   background-color: var(--seat-available-bg);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: 500;
-  user-select: none;
-  transition: all 0.2s ease-in-out;
+  font-size: 0.8rem;
+  transition: background 0.3s ease;
+  border: 1px solid transparent;
 }
 
 .seat input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .seat.selected {
   background-color: var(--seat-selected-bg);
   color: white;
+  font-weight: 600;
 }
 
 .seat.booked {
   background-color: var(--seat-booked-bg);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .legend {
   display: flex;
   justify-content: center;
-  gap: 2rem;
-  margin-top: 1rem;
+  gap: 1rem;
+  padding: 1rem 0;
+  font-size: 0.85rem;
+  text-align: center;
 }
 
 .legend div {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 14px;
+  gap: 0.4rem;
 }
 
 .legend span {
@@ -129,52 +170,106 @@
   border-radius: 4px;
 }
 
-.available { background-color: var(--seat-available-bg); }
-.selected { background-color: var(--seat-selected-bg); }
-.occupied { background-color: var(--seat-booked-bg); }
+.available {
+  background-color: var(--seat-available-bg);
+}
+
+.selected {
+  background-color: var(--seat-selected-bg);
+}
+
+.occupied {
+  background-color: var(--seat-booked-bg);
+}
 
 .booking-summary {
-  background-color: var(--card-bg);
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  width: 100%;
-  max-width: 500px;
-  margin-top: 2rem;
+  background: var(--card-bg);
   color: var(--text-color);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-width: 500px;
+  margin: 2rem auto;
+  text-align: left;
 }
 
 .booking-summary h4 {
-  font-weight: bold;
-  color: #be123c;
-  margin-bottom: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.booking-summary .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
 }
 
 .booking-summary .total {
-  font-size: 1.25rem;
   font-weight: bold;
   color: #3b82f6;
-  margin-top: 1rem;
+  font-size: 1.1rem;
 }
 
 .booking-summary button {
+  margin-top: 1rem;
   width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  background-color: #3b82f6;
+  background: #3b82f6;
   color: white;
   border: none;
+  padding: 0.75rem;
   border-radius: 0.5rem;
-  margin-top: 1rem;
-  transition: background 0.3s ease;
+  font-size: 1rem;
+  transition: background 0.3s;
+}
+
+.booking-summary button:hover {
+  background-color: #2563eb;
 }
 
 .booking-summary button:disabled {
-  background-color: #a5b4fc;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.booking-summary button:hover:not(:disabled) {
-  background-color: #2563eb;
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .selectors {
+    flex-direction: column;
+  }
+
+  .seat {
+    width: 34px;
+    height: 34px;
+    font-size: 0.75rem;
+  }
+
+  .booking-summary {
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .booking-header {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .seat {
+    width: 30px;
+    height: 30px;
+    font-size: 0.7rem;
+  }
+
+  .screen {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+  }
+
+  .booking-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .booking-summary h4 {
+    font-size: 1rem;
+  }
 }

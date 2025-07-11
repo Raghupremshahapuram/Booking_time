@@ -1,4 +1,3 @@
-// BookingPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -51,7 +50,7 @@ const BookingPage = () => {
 
   useEffect(() => {
     if (!movieName) {
-      axios.get(`https://movie-api-b9qw.onrender.com/latest?id=${id}`)
+      axios.get(`http://localhost:5000/latest?id=${id}`)
         .then(res => {
           const fetchedName = res.data[0]?.name;
           if (fetchedName) {
@@ -117,25 +116,26 @@ const BookingPage = () => {
 
   return (
     <div className="booking-container">
-      <div className="booking-header">
-        <h2>Book Tickets for: <span>{movieName}</span></h2>
-        <div className="selectors">
+      <div className="booking-header card p-4 mb-4">
+        <h2 className="text">🎬 Book Tickets for: <span className="fw-bold">{movieName}</span></h2>
+        <div className="selectors d-flex flex-wrap gap-4 mt-3">
           <div>
-            <label>Select Show Date:</label>
-            <input type="date" value={selectedDate} min={getTodayDate()} onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(''); }} />
+            <label className="form-label">Select Show Date:</label>
+            <input type="date" className="form-control" value={selectedDate} min={getTodayDate()} onChange={(e) => { setSelectedDate(e.target.value); setSelectedTime(''); }} />
           </div>
           <div>
-            <label>Select Show Time:</label>
-            <div className="show-times">
+            <label className="form-label">Select Show Time:</label>
+            <div className="btn-group d-flex flex-wrap gap-2 mt-1">
               {filteredTimes.map(show => (
-                <button key={show.label} className={selectedTime === show.label ? 'active' : ''} onClick={() => setSelectedTime(show.label)}>{show.label}</button>
+                <button key={show.label} className={`btn btn-outline ${selectedTime === show.label ? 'active' : ''}`} onClick={() => setSelectedTime(show.label)}>{show.label}</button>
               ))}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="screen">SCREEN</div>
+      <div className="text-center fw-bold mb-3 bg-dark text-white py-2 rounded">SCREEN</div>
+
       <div className="seat-grid">
         {rows.map(row => (
           <div key={row} className="seat-row">
@@ -152,19 +152,20 @@ const BookingPage = () => {
         ))}
       </div>
 
-      <div className="legend">
+      <div className="legend mt-3">
         <div><span className="available"></span> Available</div>
         <div><span className="selected"></span> Selected</div>
         <div><span className="occupied"></span> Occupied</div>
       </div>
 
-      <div className="booking-summary">
+      <div className="booking-summary card mt-4 p-4">
         <h4>Booking Summary</h4>
         <p className="text-muted">Price per seat based on row (A: ₹200 → J: ₹100)</p>
-        <div className="row"><span>Subtotal:</span><span>₹{subtotal}</span></div>
-        <div className="row"><span>Tax (25%):</span><span>₹{tax.toFixed(2)}</span></div>
-        <div className="row total"><span>Total:</span><span>₹{total.toFixed(2)}</span></div>
-        <button disabled={selectedSeats.length === 0 || !selectedTime || !selectedDate} onClick={handleBooking}>Proceed to Payment</button>
+        <div className="d-flex justify-content-between"><span>Subtotal:</span><span>₹{subtotal}</span></div>
+        <div className="d-flex justify-content-between"><span>Tax (25%):</span><span>₹{tax.toFixed(2)}</span></div>
+        <hr />
+        <div className="d-flex justify-content-between fw-bold fs-5 text-primary"><span>Total:</span><span>₹{total.toFixed(2)}</span></div>
+        <button className="btn btn-primary mt-3 w-100" disabled={selectedSeats.length === 0 || !selectedTime || !selectedDate} onClick={handleBooking}>Proceed to Payment</button>
       </div>
     </div>
   );

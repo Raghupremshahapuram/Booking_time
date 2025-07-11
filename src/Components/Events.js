@@ -19,7 +19,7 @@ const Event = () => {
     const fetchEvents = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("https://movie-api-b9qw.onrender.com/events");
+        const response = await axios.get("https://postgres-movie.onrender.com/events");
         dispatch(fetcheventSuccess(response.data));
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));
