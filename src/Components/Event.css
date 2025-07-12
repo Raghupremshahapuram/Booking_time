@@ -1,67 +1,27 @@
-/* Event container styling */
+/* Event Page Layout */
 .container {
-    padding: 30px 15px;
-  }
-  
-  /* Heading style */
-  .container h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #333;
-    font-weight: bold;
-  }
-  
-  /* Event card layout */
-  .card {
-    border: none;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
-  /* Event image */
-  .card-img-top {
-    height: 200px;
-    object-fit: cover;
-  }
-  
-  /* Card content */
-  .card-body {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  
-  .card-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #222;
-    margin-bottom: 10px;
-  }
-  
-  /* Button styling */
-  .card-body .btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    margin-top: 10px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .card-body .btn:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Responsive grid spacing */
-  @media (min-width: 768px) {
-    .col-md-4 {
-      margin-bottom: 30px;
-    }
-  }
-  
+  padding: 40px 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Section Heading */
+.container h2 {
+  text-align: center;
+  margin-bottom: 40px;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color, #111);
+}
+
+/* Responsive Grid (relies on Bootstrap grid system) */
+.row {
+  gap: 1.5rem;
+}
+
+/* If needed, specific event tweaks can go below */
+
+/* Example: override for event-specific image fallback */
+.movie-poster {
+  background-color: #f8f8f8;
+}
