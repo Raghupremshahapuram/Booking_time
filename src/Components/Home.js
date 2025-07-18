@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import ChatBot from "./ChatBot";
+
 import {
   fetchMovieRequest,
   fetchMovieSucess,
@@ -20,7 +20,7 @@ const Home = () => {
     const fetchMovies = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("https://postgres-movie.onrender.com/latest-movies");
+        const response = await axios.get("https://chatbotapi-a.onrender.com/latest-movies");
         dispatch(fetchMovieSucess(response.data));
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));
@@ -29,49 +29,6 @@ const Home = () => {
 
     fetchMovies();
   }, [dispatch]);
-
-  const handleChatBooking = (userPrompt) => {
-    const matchedMovie = latestMovies.find(
-      (movie) =>
-        movie.name &&
-        movie.name.toLowerCase().includes(userPrompt.movie_name?.toLowerCase())
-    );
-
-    if (!matchedMovie) {
-      alert("Sorry, I couldn't find a movie in your request.");
-      return;
-    }
-
-    const selectedDate = userPrompt.date;
-    const selectedTime = userPrompt.time;
-
-    if (!selectedDate || !selectedTime) {
-      alert("Please mention date and time clearly in your prompt.");
-      return;
-    }
-
-    // Save chatbot data to session storage
-    sessionStorage.setItem(
-      "chatbotBooking",
-      JSON.stringify({
-        movie_name: matchedMovie.name,
-        date: selectedDate,
-        time: selectedTime,
-        image: matchedMovie.imageUrl,
-      })
-    );
-
-    // Navigate to booking page to select seats
-    navigate(`/book/${matchedMovie.id}`, {
-      state: {
-        movieName: matchedMovie.name,
-        image: matchedMovie.imageUrl,
-        selectedDate,
-        selectedTime,
-        fromChatbot: true,
-      },
-    });
-  };
 
   const uniqueLanguages = ["All", ...new Set(latestMovies.map((m) => m.language))];
   const filteredMovies =
@@ -95,7 +52,7 @@ const Home = () => {
 
   return (
     <div className="min-vh-100 position-relative">
-      {/* Line animations */}
+      
       <div className="animated-lines">
         <div className="line"></div>
         <div className="line"></div>
@@ -186,9 +143,6 @@ const Home = () => {
           </div>
         )}
       </div>
-
-      {/* ChatBot */}
-      <ChatBot onBookingDetails={handleChatBooking} latestMovies={latestMovies} />
     </div>
   );
 };

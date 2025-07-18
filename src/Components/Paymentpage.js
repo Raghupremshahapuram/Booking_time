@@ -46,7 +46,7 @@ const PaymentPage = () => {
       bookingId
     };
 
-    axios.post('https://postgres-movie.onrender.com/bookings', bookingDetails)
+    axios.post('https://chatbotapi-a.onrender.com/bookings', bookingDetails)
       .then(() => {
         navigate('/ticket', { state: bookingDetails });
       })

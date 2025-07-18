@@ -34,7 +34,7 @@ const RegisterPage = () => {
     }
 
     try {
-      const res = await axios.get('https://postgres-movie.onrender.com/users');
+      const res = await axios.get('https://chatbotapi-a.onrender.com/users');
       const existingUser = res.data.find(
         (user) => user.name === name || user.email === email
       );
@@ -44,7 +44,7 @@ const RegisterPage = () => {
         return;
       }
 
-      await axios.post('https://postgres-movie.onrender.com/users', {
+      await axios.post('https://chatbotapi-a.onrender.com/users', {
         name,
         email,
         password

@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route,Routes} from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import Home from './Components/Home';
 import MovieDetails from './Components/Moviedetails';
@@ -12,45 +12,35 @@ import RegisterPage from './Components/RegisterPage';
 import UpcomingDetails from './Components/Upcomingdetails';
 import EventDetails from './Components/Eventdetails';
 import EventBookingPage from './Components/Eventbooking.js';
-import'./App.css';
-import AppHeader from './Components/Appheader';
 import Profile from './Components/Profile.js';
 import PaymentPage from './Components/Paymentpage.js';
-
+import AppHeader from './Components/Appheader';
+import ChatBot from './Components/ChatBot'; // ✅ Import ChatBot
+import './App.css';
 
 const Routing = () => {
   return (
+    <BrowserRouter>
+      <AppHeader />
+      <ChatBot /> {/* ✅ Render chatbot globally on all pages */}
 
-              <BrowserRouter>
-              <AppHeader/>
-                <Routes>
-
-                  <Route path="/" element={<Home />} />
-                  <Route path="/movie/:id" element={<MovieDetails />} />
-                  <Route path="/Upcoming" element={<Upcoming />}></Route>
-
-                  <Route path="/event" element={<Event />} />
-
-                  <Route path="/book/:id" element={<BookingPage />} />
-                  <Route path="/ticket" element={<TicketPage />} />
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/register" element={<RegisterPage />} />
-
-                  <Route path="/upcoming/:id" element={<UpcomingDetails />} />
-                  <Route path="/event/:id" element={<EventDetails />} />
-                  <Route path="/event-book/:id" element={<EventBookingPage />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/payment" element={<PaymentPage/>} />
-
-
-                </Routes>
-              </BrowserRouter>
-        
-        
-      
-
-        );
-    };
-
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/movie/:id" element={<MovieDetails />} />
+        <Route path="/Upcoming" element={<Upcoming />} />
+        <Route path="/event" element={<Event />} />
+        <Route path="/book/:id" element={<BookingPage />} />
+        <Route path="/ticket" element={<TicketPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/upcoming/:id" element={<UpcomingDetails />} />
+        <Route path="/event/:id" element={<EventDetails />} />
+        <Route path="/event-book/:id" element={<EventBookingPage />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/payment" element={<PaymentPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export default Routing;

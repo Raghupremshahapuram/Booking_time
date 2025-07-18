@@ -29,7 +29,7 @@ const EventBookingPage = () => {
   };
 
   useEffect(() => {
-    axios.get(`https://postgres-movie.onrender.com/events`)
+    axios.get(`https://chatbotapi-a.onrender.com/events`)
       .then(res => {
         const event = res.data.find(e => String(e.id) === String(id));
         if (event) {
@@ -47,7 +47,7 @@ const EventBookingPage = () => {
 
   useEffect(() => {
     if (eventDetails) {
-      axios.get('https://postgres-movie.onrender.com/bookings', {
+      axios.get('https://chatbotapi-a.onrender.com/bookings', {
         params: {
           event_name: eventDetails.name,
           date: eventDetails.date,

@@ -13,7 +13,7 @@ const MovieDetails = () => {
   const { darkMode } = useContext(ThemeContext);
 
   useEffect(() => {
-    axios.get("https://postgres-movie.onrender.com/latest-movies")
+    axios.get("https://chatbotapi-a.onrender.com/latest-movies")
       .then(res => {
         const found = res.data.find((m) => String(m.id) === String(id));
         setMovie(found);
@@ -30,6 +30,7 @@ const MovieDetails = () => {
 
     if (!isLoggedIn) {
       sessionStorage.setItem('moviename', movie.name);
+      sessionStorage.setItem('movieImage', movie.imageUrl);
       navigate('/login', { state: { from: `/book/${movie.id}` } });
     } else {
       navigate(`/book/${movie.id}`, {

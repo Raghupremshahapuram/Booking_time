@@ -12,7 +12,7 @@ const EventDetails = () => {
   const { darkMode } = useContext(ThemeContext);
 
   useEffect(() => {
-    axios.get(`https://postgres-movie.onrender.com/events`)
+    axios.get(`https://chatbotapi-a.onrender.com/events`)
       .then(res => {
         const found = res.data.find(e => String(e.id) === String(id));
         setEvent(found);

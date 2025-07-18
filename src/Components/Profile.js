@@ -19,7 +19,7 @@ const Profile = () => {
   useEffect(() => {
     if (name) {
       axios
-        .get(`https://postgres-movie.onrender.com/bookings?name=${name}`)
+        .get(`https://chatbotapi-a.onrender.com/bookings?name=${name}`)
         .then((res) => setBookings(res.data))
         .catch((err) => console.error("Error fetching bookings:", err));
     }
@@ -48,7 +48,7 @@ const Profile = () => {
     if (!reason) return;
 
     axios
-      .post("https://postgres-movie.onrender.com/cancelled-bookings", {
+      .post("https://chatbotapi-a.onrender.com/cancelled-bookings", {
         booking_id: id,
         reason,
       })

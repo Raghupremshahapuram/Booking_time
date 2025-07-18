@@ -75,7 +75,8 @@ Thank you for booking with E-Cube!`;
                 <i className="bi bi-people-fill fs-5 text-success"></i>
                 <div>
                   <div className="text-muted small">Seats</div>
-                  <strong>{seatCount}</strong>
+                  <strong>{seatCount}</strong> 
+
                 </div>
               </div>
             </div>

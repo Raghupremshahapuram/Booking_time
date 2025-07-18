@@ -17,7 +17,7 @@ const Upcoming = () => {
     const fetchMovies = async () => {
       dispatch(fetchMovieRequest());
       try {
-        const response = await axios.get("https://postgres-movie.onrender.com/upcoming-movies");
+        const response = await axios.get("https://chatbotapi-a.onrender.com/upcoming-movies");
         dispatch(fetchUpcomingSuccess(response.data));
       } catch (err) {
         dispatch(fetchMoviefailure(err.message));

@@ -10,9 +10,10 @@ const UpcomingDetails = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get("https://postgres-movie.onrender.com/upcoming-movies")
+    axios.get("https://chatbotapi-a.onrender.com/upcoming-movies")
       .then(res => {
-        const found = res.data.find((movie) => movie.id === id);
+        // Find movie by comparing id, converting both to string for safety
+        const found = res.data.find((movie) => String(movie.id) === id);
         setMovie(found);
         setLoading(false);
       })
@@ -34,8 +35,21 @@ const UpcomingDetails = () => {
           <h5 className="upcoming.card-title">{movie.name}</h5>
           <p><strong>Type:</strong> {movie.description}</p>
           <p><strong>Language:</strong> {movie.language}</p>
-          <p><strong>Trailer:</strong> {movie.trailer_url}</p>
-          <button onClick={() => navigate(-1)} className="btn btn-secondary">Back</button>
+
+        
+          <p>
+            <strong>Trailer:</strong>
+           
+            <button
+              onClick={() => window.open(movie.trailer_url, '_blank')}
+              className="btn btn-primary btn-sm"
+            >
+              Watch Trailer
+            </button>
+          </p>
+          
+
+          <button onClick={() => navigate(-1)} className="btn btn-secondary mt-3">Back</button>
         </div>
       </div>
     </div>

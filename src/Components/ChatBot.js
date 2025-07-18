@@ -1,88 +1,157 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './ChatBot.css';
 
-const ChatBot = ({ onBookingDetails, latestMovies }) => {
+const ChatBot = () => {
+  const [movies, setMovies] = useState([]);
   const [messages, setMessages] = useState([]);
   const [prompt, setPrompt] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [pendingIntent, setPendingIntent] = useState(null);
+  const chatWindowRef = useRef(null);
+  const inputRef = useRef(null);
+  const navigate = useNavigate();
 
-  const handleSend = () => {
-    if (!prompt.trim()) return;
+  // Load movie list once
+  useEffect(() => {
+    fetch('https://chatbotapi-a.onrender.com/latest-movies')
+      .then((r) => r.json())
+      .then((data) => setMovies(data))
+      .catch(console.error);
+  }, []);
 
-    const userMessage = { sender: 'user', text: prompt };
-    setMessages(prev => [...prev, userMessage]);
+  // Scroll to bottom on new message
+  useEffect(() => {
+    chatWindowRef.current?.scrollTo(0, chatWindowRef.current.scrollHeight);
+    inputRef.current?.focus();
+  }, [messages, loading]);
 
-    const response = parsePrompt(prompt);
-    setMessages(prev => [...prev, response.message]);
+  const formatDate = (d) =>
+    d.toLowerCase() === 'today' ? new Date().toISOString().split('T')[0] : d;
 
-    if (response.bookingIntent) {
-      onBookingDetails(response.bookingIntent); // Trigger parent with booking intent
+  const handleSend = async () => {
+    const text = prompt.trim();
+    if (!text) return;
+
+    // If waiting for confirmation
+    if (pendingIntent && /^(yes|confirm|yep|ok|okay|sure)$/i.test(text)) {
+      setMessages((m) => [...m, { sender: 'user', text }]);
+      setMessages((m) => [
+        ...m,
+        { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' }
+      ]);
+
+      const { movieId, movie_name, date, time, seats } = pendingIntent;
+      setPendingIntent(null); // clear it
+
+      return navigate(`/book/${movieId}`, {
+        state: {
+          movieName: movie_name,
+          selectedDate: formatDate(date),
+          selectedTime: time,
+          ticketCount: seats
+        }
+      });
     }
 
+    // Standard flow
+    setMessages((m) => [...m, { sender: 'user', text }]);
     setPrompt('');
-  };
+    setLoading(true);
 
-  const parsePrompt = (text) => {
-    const lowerText = text.toLowerCase();
+    try {
+      const res = await fetch('https://chatbotapi-a.onrender.com/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: [
+            {
+              role: 'system',
+              content: `
+You are a movie booking assistant. Ask step-by-step:
+- Movie name
+- Date
+- Time
+- Number of seats
+Once all are provided, return a bookingIntent JSON and a confirmation message.
+              `
+            },
+            ...messages.map((m) => ({
+              role: m.sender === 'user' ? 'user' : 'assistant',
+              content: m.text
+            })),
+            { role: 'user', content: text }
+          ]
+        })
+      });
 
-    // Match movie by name (partial or exact match)
-    const matchedMovie = latestMovies.find(m =>
-      lowerText.includes(m.name.toLowerCase())
-    );
+      const data = await res.json();
+      setMessages((m) => [...m, { sender: 'bot', text: data.reply }]);
 
-    // Match time
-    const timeMatch = /(?:at|for)?\s?(\d{1,2})(:\d{2})?\s?(am|pm)?/i.exec(text);
-    const time = timeMatch
-      ? `${timeMatch[1]}${timeMatch[2] || ':00'} ${timeMatch[3]?.toUpperCase() || 'PM'}`
-      : null;
-
-    // Match date
-    let date = new Date();
-    const dateMatch = /on\s(\d{1,2})\s(january|february|march|april|may|june|july|august|september|october|november|december)/i.exec(text);
-    if (dateMatch) {
-      const [ day, monthName] = dateMatch;
-      date = new Date(`${monthName} ${day}, ${new Date().getFullYear()}`);
-    } else if (/tomorrow/i.test(text)) {
-      date.setDate(date.getDate() + 1);
+      if (data.bookingIntent) {
+        const found = movies.find(
+          (mv) => mv.name.toLowerCase() === data.bookingIntent.movie_name.toLowerCase()
+        );
+      
+        if (!found) {
+          setMessages((m) => [
+            ...m,
+            {
+              sender: 'bot',
+              text: `❌ Movie "${data.bookingIntent.movie_name}" not found. Please try a different movie.`
+            }
+          ]);
+        } else {
+          // Immediately redirect
+          setMessages((m) => [
+            ...m,
+            { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' },
+            { sender: 'bot', text: 'Please select seats' }
+          ]);
+      
+          navigate(`/book/${found.id}`, {
+            state: {
+              movieName: found.name,
+              selectedDate: formatDate(data.bookingIntent.date),
+              selectedTime: data.bookingIntent.time,
+              ticketCount: data.bookingIntent.seats
+            }
+          });
+        }
+      }
+      
+    } catch (err) {
+      console.error(err);
+      setMessages((m) => [
+        ...m,
+        { sender: 'bot', text: '❌ Error occurred. Please try again later.' }
+      ]);
+    } finally {
+      setLoading(false);
     }
-    const finalDate = date.toISOString().split('T')[0];
-
-    const replyText = matchedMovie
-      ? `🎬 Booking intent captured for "${matchedMovie.name}" at ${time || '7:00 PM'} on ${finalDate}.`
-      : `❌ Could not find the specified movie. Please try again.`;
-
-    return {
-      message: { sender: 'bot', text: replyText },
-      bookingIntent: matchedMovie
-        ? {
-            movie_id: matchedMovie.id,
-            movie_name: matchedMovie.name,
-            image: matchedMovie.imageUrl,
-            date: finalDate,
-            time: time || '7:00 PM'
-          }
-        : null
-    };
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') handleSend();
   };
 
   return (
     <div className="chatbot">
-      <div className="chat-window">
+      <div className="chat-window" ref={chatWindowRef}>
         {messages.map((m, i) => (
           <div key={i} className={`message ${m.sender}`}>{m.text}</div>
         ))}
+        {loading && <div className="message bot">🤖 .......</div>}
       </div>
+
       <div className="chat-input">
         <input
+          ref={inputRef}
           value={prompt}
-          onChange={e => setPrompt(e.target.value)}
-          onKeyDown={handleKeyPress}
-          placeholder="Ask me to book a ticket..."
+          onChange={(e) => setPrompt(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+          disabled={loading}
+          placeholder="Ask me to book tickets..."
         />
-        <button onClick={handleSend}>Send</button>
+        <button onClick={handleSend} disabled={loading || !prompt.trim()}>
+          Send
+        </button>
       </div>
     </div>
   );
