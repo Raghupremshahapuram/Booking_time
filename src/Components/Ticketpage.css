@@ -28,13 +28,9 @@ body.dark-mode .card-footer {
   background: linear-gradient(to right, #4f46e5, #7c3aed);
 }
 
-/* Print styles */
 @media print {
   body * {
     visibility: hidden !important;
-    background: #fff !important;
-    color: #000 !important;
-    box-shadow: none !important;
   }
 
   .printable-card,
@@ -47,8 +43,17 @@ body.dark-mode .card-footer {
     top: 0;
     left: 0;
     width: 100% !important;
-    padding: 20px;
-    background: white;
+    padding: 0;
+    margin: 0;
+    box-shadow: none !important;
+    background: white !important;
+    /* -webkit-print-color-adjust: exact; */
+    page-break-inside: avoid;
+  }
+
+  .card {
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .no-print,
@@ -57,8 +62,7 @@ body.dark-mode .card-footer {
     display: none !important;
   }
 
-  .ticket-header {
-    background-color: #000 !important;
-    color: #fff !important;
+  @page {
+    margin: 0;
   }
 }
