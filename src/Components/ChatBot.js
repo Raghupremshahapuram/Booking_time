@@ -28,11 +28,10 @@ const ChatBot = () => {
 
   const formatDate = (d) =>
     d.toLowerCase() === 'today' ? new Date().toISOString().split('T')[0] : d;
-
   const handleSend = async () => {
     const text = prompt.trim();
     if (!text) return;
-
+  
     // If waiting for confirmation
     if (pendingIntent && /^(yes|confirm|yep|ok|okay|sure)$/i.test(text)) {
       setMessages((m) => [...m, { sender: 'user', text }]);
@@ -40,10 +39,10 @@ const ChatBot = () => {
         ...m,
         { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' }
       ]);
-
+  
       const { movieId, movie_name, date, time, seats } = pendingIntent;
       setPendingIntent(null); // clear it
-
+  
       return navigate(`/book/${movieId}`, {
         state: {
           movieName: movie_name,
@@ -53,12 +52,11 @@ const ChatBot = () => {
         }
       });
     }
-
+  
     // Standard flow
-    setMessages((m) => [...m, { sender: 'user', text }]);
     setPrompt('');
     setLoading(true);
-
+  
     try {
       const res = await fetch('https://chatbotapi-a.onrender.com/chatbot', {
         method: 'POST',
@@ -68,12 +66,13 @@ const ChatBot = () => {
             {
               role: 'system',
               content: `
-You are a movie booking assistant. Ask step-by-step:
-- Movie name
-- Date
-- Time
-- Number of seats
-Once all are provided, return a bookingIntent JSON and a confirmation message.
+  You are a movie booking assistant. Ask step-by-step:
+  - Movie name
+  - Date
+  - Time
+  - Number of seats
+  If user gives full intent in one sentence, extract and return bookingIntent JSON and a confirmation message.
+  Output plain JSON without code blocks.
               `
             },
             ...messages.map((m) => ({
@@ -84,52 +83,62 @@ Once all are provided, return a bookingIntent JSON and a confirmation message.
           ]
         })
       });
-
+  
       const data = await res.json();
-      setMessages((m) => [...m, { sender: 'bot', text: data.reply }]);
-
+  
       if (data.bookingIntent) {
         const found = movies.find(
           (mv) => mv.name.toLowerCase() === data.bookingIntent.movie_name.toLowerCase()
         );
-      
+  
         if (!found) {
           setMessages((m) => [
             ...m,
+            { sender: 'user', text },
             {
               sender: 'bot',
-              text: `❌ Movie "${data.bookingIntent.movie_name}" not found. Please try a different movie.`
-            }
+              text: `❌ Movie "${data.bookingIntent.movie_name}" not found. Please try a different movie.`,
+            },
           ]);
         } else {
-          // Immediately redirect
           setMessages((m) => [
             ...m,
+            { sender: 'user', text },
+            { sender: 'bot', text: data.reply || '🎟️ Booking confirmed!' },
             { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' },
             { sender: 'bot', text: 'Please select seats' }
           ]);
-      
+  
           navigate(`/book/${found.id}`, {
             state: {
               movieName: found.name,
+              image: found.imageUrl,
               selectedDate: formatDate(data.bookingIntent.date),
               selectedTime: data.bookingIntent.time,
               ticketCount: data.bookingIntent.seats
             }
           });
         }
+      } else {
+        // no bookingIntent yet - continue conversation
+        setMessages((m) => [
+          ...m,
+          { sender: 'user', text },
+          { sender: 'bot', text: data.reply || '🤖 I need more information to proceed.' }
+        ]);
       }
-      
     } catch (err) {
       console.error(err);
       setMessages((m) => [
         ...m,
+        { sender: 'user', text },
         { sender: 'bot', text: '❌ Error occurred. Please try again later.' }
       ]);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="chatbot">
