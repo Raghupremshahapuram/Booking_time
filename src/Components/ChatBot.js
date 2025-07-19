@@ -20,6 +20,9 @@ const ChatBot = () => {
     return `${hour}:00 ${period}`;
   };
 
+  const formatDate = (d) =>
+    d.toLowerCase() === 'today' ? new Date().toISOString().split('T')[0] : d;
+
   useEffect(() => {
     fetch('https://chatbotapi-a.onrender.com/latest-movies')
       .then((r) => r.json())
@@ -44,9 +47,6 @@ const ChatBot = () => {
     inputRef.current?.focus();
   }, [messages, loading]);
 
-  const formatDate = (d) =>
-    d.toLowerCase() === 'today' ? new Date().toISOString().split('T')[0] : d;
-
   const handleSend = async () => {
     const text = prompt.trim();
     if (!text) return;
@@ -55,7 +55,7 @@ const ChatBot = () => {
       setMessages((m) => [...m, { sender: 'user', text }]);
       setMessages((m) => [
         ...m,
-        { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' }
+        { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' },
       ]);
       const { movieId, movie_name, date, time, seats } = pendingIntent;
       setPendingIntent(null);
@@ -65,8 +65,8 @@ const ChatBot = () => {
           movieName: movie_name,
           selectedDate: formatDate(date),
           selectedTime: convertTimeFormat(time),
-          ticketCount: seats
-        }
+          ticketCount: seats,
+        },
       });
     }
 
@@ -82,26 +82,43 @@ const ChatBot = () => {
             {
               role: 'system',
               content: `
-You are a movie booking assistant. Ask step-by-step:
-- Movie name
-- Date
-- Time
-- Number of seats
-If user gives full intent in one sentence, extract and return bookingIntent JSON and a confirmation message.
-Output plain JSON without code blocks.
-              `
+You are a smart assistant for a movie and event booking platform.
+You can:
+- Book movie tickets (needs: movie name, date, time, number of seats)
+- Show list of available movies
+- Show list of events
+- Show showtimes for a specific movie
+
+When booking, return:
+{
+  "movie_name": "Dasara",
+  "date": "today",
+  "time": "4 PM",
+  "seats": 2
+}
+
+When asked for listings or showtimes, return:
+{
+  "action": "list_movies" | "list_events" | "get_timings",
+  "movie_name": "RRR" (optional),
+  "date": "today" (optional)
+}
+
+Do not use code blocks or markdown. Output JSON inline.
+              `.trim(),
             },
             ...messages.map((m) => ({
               role: m.sender === 'user' ? 'user' : 'assistant',
-              content: m.text
+              content: m.text,
             })),
-            { role: 'user', content: text }
-          ]
-        })
+            { role: 'user', content: text },
+          ],
+        }),
       });
 
       const data = await res.json();
 
+      // 🟢 Handle booking intent
       if (data.bookingIntent) {
         const found = movies.find(
           (mv) => mv.name.toLowerCase() === data.bookingIntent.movie_name.toLowerCase()
@@ -113,8 +130,8 @@ Output plain JSON without code blocks.
             { sender: 'user', text },
             {
               sender: 'bot',
-              text: `❌ Movie "${data.bookingIntent.movie_name}" not found. Please try a different movie.`
-            }
+              text: `❌ Movie "${data.bookingIntent.movie_name}" not found. Please try a different movie.`,
+            },
           ]);
         } else {
           setMessages((m) => [
@@ -122,7 +139,7 @@ Output plain JSON without code blocks.
             { sender: 'user', text },
             { sender: 'bot', text: data.reply || '🎟️ Booking confirmed!' },
             { sender: 'bot', text: '🎟️ Booking confirmed. Redirecting to seat selection...' },
-            { sender: 'bot', text: 'Please select seats' }
+            { sender: 'bot', text: 'Please select seats' },
           ]);
 
           navigate(`/book/${found.id}`, {
@@ -131,15 +148,47 @@ Output plain JSON without code blocks.
               image: found.imageUrl,
               selectedDate: formatDate(data.bookingIntent.date),
               selectedTime: convertTimeFormat(data.bookingIntent.time),
-              ticketCount: data.bookingIntent.seats
-            }
+              ticketCount: data.bookingIntent.seats,
+            },
           });
         }
-      } else {
+      }
+
+      // 🟢 Handle event listing
+      else if (data.action?.action === 'list_events') {
+        try {
+          const response = await fetch('https://chatbotapi-a.onrender.com/events');
+          const events = await response.json();
+
+          let eventList = '❌ No upcoming events found.';
+          if (Array.isArray(events) && events.length > 0) {
+            eventList = events
+              .map((e) => `🎉 ${e.name} - ${e.location} on ${e.event_date}`)
+              .join('\n');
+          }
+
+          setMessages((m) => [
+            ...m,
+            { sender: 'user', text },
+            { sender: 'bot', text: data.reply || 'Here are the upcoming events:' },
+            { sender: 'bot', text: eventList },
+          ]);
+        } catch (e) {
+          console.error('❌ Failed to fetch events:', e);
+          setMessages((m) => [
+            ...m,
+            { sender: 'user', text },
+            { sender: 'bot', text: '❌ Failed to load events.' },
+          ]);
+        }
+      }
+
+      // 🟡 Default fallback
+      else {
         setMessages((m) => [
           ...m,
           { sender: 'user', text },
-          { sender: 'bot', text: data.reply || '🤖 I need more information to proceed.' }
+          { sender: 'bot', text: data.reply || '🤖 I need more information to proceed.' },
         ]);
       }
     } catch (err) {
@@ -147,7 +196,7 @@ Output plain JSON without code blocks.
       setMessages((m) => [
         ...m,
         { sender: 'user', text },
-        { sender: 'bot', text: '❌ Error occurred. Please try again later.' }
+        { sender: 'bot', text: '❌ Error occurred. Please try again later.' },
       ]);
     } finally {
       setLoading(false);
@@ -169,7 +218,7 @@ Output plain JSON without code blocks.
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSend()}
           disabled={loading}
-          placeholder="Ask me to book tickets..."
+          placeholder="Ask me to book tickets or list events..."
         />
         <button onClick={handleSend} disabled={loading || !prompt.trim()}>
           Send
