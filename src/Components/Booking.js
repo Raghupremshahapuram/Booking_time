@@ -57,6 +57,13 @@ const BookingPage = () => {
       setLoading(false);
     }
   }, [id, movieName]);
+  useEffect(() => {
+    if (!selectedTime && location.state?.selectedTime) {
+      // Safely set selectedTime only once
+      setSelectedTime(location.state.selectedTime);
+    }
+  }, [location.state, selectedTime]);
+  
 
   useEffect(() => {
     if (movieName && selectedDate && selectedTime) {

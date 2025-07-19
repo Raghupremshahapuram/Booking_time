@@ -45,6 +45,9 @@ const PaymentPage = () => {
       upiId: paymentMethod === 'upi' ? upiId.trim() : undefined,
       bookingId
     };
+    sessionStorage.setItem('chatbotMessage', '🎉 Booking successful! Enjoy your movie! 🍿');
+    window.dispatchEvent(new Event("chatbotUpdate")); // 👈 this triggers it immediately
+    
 
     axios.post('https://chatbotapi-a.onrender.com/bookings', bookingDetails)
       .then(() => {
