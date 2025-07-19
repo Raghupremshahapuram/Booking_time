@@ -7,6 +7,10 @@ function App() {
     <div>
    
        <Routing/>
+       <footer style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.85rem' }}>
+  Made with ❤️ by RaghuPrem Shahapuram
+</footer>
+
     </div>
   );
 }
