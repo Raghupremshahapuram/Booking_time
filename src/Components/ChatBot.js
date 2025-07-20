@@ -8,7 +8,7 @@ const ChatBot = () => {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
   const [pendingIntent, setPendingIntent] = useState(null);
-  const [minimized, setMinimized] = useState(false);
+  const [minimized, setMinimized] = useState(true);
 
   const chatWindowRef = useRef(null);
   const inputRef = useRef(null);
@@ -202,12 +202,24 @@ Do not use code blocks or markdown. Output JSON inline.
   };
 
   return (
-    <div
-      className={`chatbot ${minimized ? 'minimized' : ''}`}
-      onClick={minimized ? toggleMinimize : undefined}
-    >
+    <div className={`chatbot ${minimized ? 'minimized' : ''}`}>
+
       {minimized ? (
-        <div className="chat-icon" title="Open Chat">💬</div>
+        <div
+        className="chat-icon"
+        title="Open Chat"
+        onClick={() => {
+          setMinimized(false);
+          setPrompt('book tickets');
+          setTimeout(() => {
+            inputRef.current?.focus();
+            handleSend();
+          }, 100); // Wait briefly to ensure UI is ready
+        }}
+      >
+        💬
+      </div>
+      
       ) : (
         <>
           <div className="chat-header" onClick={toggleMinimize}>
