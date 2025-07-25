@@ -15,7 +15,7 @@ const ChatBot = () => {
   const [selectedMovie, setSelectedMovie] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(true);
+  const [bookingComplete, setBookingComplete] = useState(false);
 
   const chatWindowRef = useRef(null);
   const inputRef = useRef(null);
@@ -44,6 +44,19 @@ const ChatBot = () => {
       return t.toISOString().split('T')[0];
     }
     return label;
+  };
+
+  const resetConversation = () => {
+    setMessages([]);
+    setPrompt('');
+    setShowLangFilter(false);
+    setSelectedLanguage('');
+    setFilteredMovies([]);
+    setSelectedMovie('');
+    setSelectedDate('');
+    setSelectedTime('');
+    setBookingComplete(false);
+    navigate('/'); // ✅ Redirect to home after reset
   };
 
   const sendMessage = (text, sender = 'user') => {
@@ -87,7 +100,6 @@ Return bookingIntent or action keys when needed.
 
       if (text.toLowerCase().includes('book')) {
         setShowLangFilter(true);
-        setShowSuggestions(false); // Hide buttons after starting booking
         sendMessage("I need some details to book your tickets. Please select a language.", 'bot');
         return;
       }
@@ -106,8 +118,6 @@ Return bookingIntent or action keys when needed.
     const filtered = movies.filter((m) => m.language === lang);
     setFilteredMovies(filtered);
     setShowLangFilter(false);
-    setShowSuggestions(false); // hide book/show buttons after language selection
-
     sendMessage('Here are the movies available:', 'bot');
   };
 
@@ -115,8 +125,7 @@ Return bookingIntent or action keys when needed.
     setSelectedMovie(movie.name);
     sendMessage(movie.name, 'user');
     sendMessage(`🎬 You selected ${movie.name}. What date would you like to watch?`, 'bot');
-
-    setMessages((prev) => prev.filter((msg) => typeof msg.text !== 'object')); // Clear buttons
+    setMessages((prev) => prev.filter((msg) => typeof msg.text !== 'object'));
   };
 
   const handleDateSelect = (dateLabel) => {
@@ -136,12 +145,15 @@ Return bookingIntent or action keys when needed.
     const seats = parseInt(text);
     if (!isNaN(seats) && seats > 0) {
       sendMessage(`${seats} ticket(s)`, 'user');
-      setPrompt(''); // Clear input after seat entry
+      setPrompt(''); // ✅ clear input after seat count
 
       const movie = movies.find((m) => m.name === selectedMovie);
       if (movie) {
         sendMessage('🎟️ Booking confirmed. Redirecting to seat selection...', 'bot');
         sendMessage('Please select your seats.', 'bot');
+
+        sessionStorage.setItem('chatbotMessage', '🎉 Booking successful! Enjoy your movie! 🍿');
+        setBookingComplete(true);
 
         navigate(`/book/${movie.id}`, {
           state: {
@@ -152,13 +164,6 @@ Return bookingIntent or action keys when needed.
             image: movie.imageUrl || 'https://via.placeholder.com/200x250?text=No+Image'
           }
         });
-
-        // Optional: reset states for new booking
-        setSelectedLanguage('');
-        setSelectedMovie('');
-        setSelectedDate('');
-        setSelectedTime('');
-        setShowSuggestions(true);
       }
     } else {
       sendMessage('❌ Please enter a valid number of seats.', 'bot');
@@ -201,6 +206,7 @@ Return bookingIntent or action keys when needed.
             {messages.map((m, i) => (
               <div key={i} className={`message ${m.sender}`}>{m.text}</div>
             ))}
+
             {loading && <div className="message bot">🤖 .......</div>}
 
             {showLangFilter && (
@@ -240,6 +246,12 @@ Return bookingIntent or action keys when needed.
                 ))}
               </div>
             )}
+
+            {bookingComplete && (
+              <div className="chat-suggestions">
+                <button onClick={resetConversation}>🔁 Start New Booking</button>
+              </div>
+            )}
           </div>
 
           <div className="chat-input">
@@ -271,7 +283,7 @@ Return bookingIntent or action keys when needed.
             </button>
           </div>
 
-          {showSuggestions && !selectedMovie && !showLangFilter && (
+          {!selectedMovie && !selectedLanguage && !bookingComplete && !showLangFilter && (
             <div className="chat-suggestions">
               <button onClick={() => handleSend('book tickets')}>🎟️ Book Tickets</button>
               <button onClick={() => handleSend('show events')}>📅 Show Events</button>

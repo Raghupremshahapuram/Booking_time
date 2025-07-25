@@ -15,14 +15,14 @@ import EventBookingPage from './Components/Eventbooking.js';
 import Profile from './Components/Profile.js';
 import PaymentPage from './Components/Paymentpage.js';
 import AppHeader from './Components/Appheader';
-import ChatBot from './Components/ChatBot'; // ✅ Import ChatBot
+import ChatBot from './Components/ChatBot'; 
 import './App.css';
 
 const Routing = () => {
   return (
     <BrowserRouter>
       <AppHeader />
-      <ChatBot /> {/* ✅ Render chatbot globally on all pages */}
+      <ChatBot /> 
 
       <Routes>
         <Route path="/" element={<Home />} />
