@@ -30,7 +30,8 @@
 
 .chatbot.minimized .chat-header,
 .chatbot.minimized .chat-window,
-.chatbot.minimized .chat-input {
+.chatbot.minimized .chat-input,
+.chatbot.minimized .chat-suggestions {
   display: none;
 }
 
@@ -49,6 +50,7 @@
   padding: 10px;
   overflow-y: auto;
   background: #fff;
+  scroll-behavior: smooth;
 }
 
 .message {
@@ -89,4 +91,28 @@
   border: none;
   padding: 6px 12px;
   border-radius: 8px;
+}
+
+.chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  justify-content: center;
+  background: #fff;
+}
+
+.chat-suggestions button {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 20px;
+  border: none;
+  background-color: #e0e0e0;
+  color: #000;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.chat-suggestions button:hover {
+  background-color: #d4d4d4;
 }
